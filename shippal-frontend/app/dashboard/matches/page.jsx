@@ -74,7 +74,8 @@ export default function MatchesPage() {
                         // If I'm buyer, show Product info and Seller info
                         // If I'm seller, show Request info and Buyer info
                         const isBuyer = role === "buyer"
-                        const item = isBuyer ? match.product : match.request
+                        // Item can be product OR request, depending on what was swiped
+                        const item = match.product || match.request
 
                         // Helper to get profile safely
                         const getProfile = (p) => {
@@ -96,7 +97,9 @@ export default function MatchesPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-white">{partner?.full_name || "Unknown User"}</h3>
-                                            <p className="text-sm text-zinc-400">{partner?.company_name || "Unknown Company"}</p>
+                                            <p className="text-sm text-zinc-400">
+                                                {partner?.company_name || (partner?.role === 'buyer' ? "Individual Buyer" : "Unknown Company")}
+                                            </p>
                                         </div>
                                     </div>
 
