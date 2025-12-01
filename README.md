@@ -2,17 +2,17 @@
 
 # ShipPal
 
-![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Strands Agents](https://img.shields.io/badge/AI-Strands_Agents-FF4B4B?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Hackathon-orange?style=for-the-badge)
+![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)
+![Strands Agents](https://img.shields.io/badge/AI-Strands_Agents-FF4B4B?style=flat)
+![Status](https://img.shields.io/badge/Status-Hackathon-orange?style=flat)
+
 
 > **Tinder for Export** — UMKM dengan Kebutuhan Buyer Global.
 
 </div>
 
-## 📋 Executive Summary (Rangkuman Eksekutif)
 
 **ShipPal** adalah platform "Smart Matchmaking" berbasis AI yang menghubungkan UMKM (Eksportir Lokal) dengan Pembeli Internasional (Buyer).
 
