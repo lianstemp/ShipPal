@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "shippal-backend"
+version = "0.1.0"
+description = "Backend server for ShipPal application"
+authors = ["Farhan Aulianda <farhanauliandaa@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<4.0"
+supabase = "^2.24.0"
+python-dotenv = "^1.2.1"
+fastapi = "^0.123.0"
+uvicorn = "^0.38.0"
+sse-starlette = "^3.0.3"
+pydantic = "^2.12.5"
+httpx = "^0.28.1"
+openai = "^2.8.1"
+strands-agents = "^1.18.0"
+ruff = "^0.14.7"
+beautifulsoup4 = "^4.14.3"
+pypdf = "^6.4.0"
+pyjwt = "^2.10.1"
+
+
+[dependency-groups]
+dev = [
+    "poethepoet (>=0.37.0,<0.38.0)",
+    "bandit (>=1.9.1,<2.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.poe.tasks]
+dev ="python main.py"
+lint = "ruff check . --fix"
+format = "ruff format ."
+check = "ruff check . --output-format=github"
+security = "bandit -r ."
+
