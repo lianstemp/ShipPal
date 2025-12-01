@@ -2,7 +2,7 @@
 -- Membuat tipe data kustom agar data konsisten (Idempotent)
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
-        create type user_role as enum ('buyer', 'seller', 'admin');
+        create type user_role as enum ('buyer', 'seller');
     END IF;
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'match_status') THEN
         create type match_status as enum ('pending', 'matched', 'rejected', 'closed');
@@ -169,7 +169,10 @@ with check (exists (select 1 from public.matches where id = match_id and (buyer_
 
 -- Trigger: Otomatis buat profil publik saat User Sign Up (Email/Password)
 create or replace function public.handle_new_user()
-returns trigger as $$
+returns trigger 
+security definer
+set search_path = public
+as $$
 begin
   insert into public.profiles (id, full_name, avatar_url, email, role)
   values (
@@ -179,11 +182,12 @@ begin
     new.raw_user_meta_data->>'avatar_url', 
     new.email,
     -- Ambil role dari metadata, default ke 'seller' jika tidak ada (meskipun harusnya ada)
-    COALESCE(new.raw_user_meta_data->>'role', 'seller')::user_role
+    -- Pastikan lowercase agar sesuai dengan enum
+    COALESCE(LOWER(new.raw_user_meta_data->>'role'), 'seller')::public.user_role
   );
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql;
 
 -- Mengaktifkan Trigger pada tabel auth.users
 -- Drop dulu jika ada (untuk safety saat reset db)
