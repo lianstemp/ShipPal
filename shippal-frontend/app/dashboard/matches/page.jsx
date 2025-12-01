@@ -24,6 +24,12 @@ export default function MatchesPage() {
                     setMatches(data)
                 } catch (error) {
                     console.error("Error loading matches:", error)
+                    console.error("Error details:", {
+                        message: error.message,
+                        code: error.code,
+                        details: error.details,
+                        hint: error.hint
+                    })
                 }
             }
             setLoading(false)
@@ -68,8 +74,18 @@ export default function MatchesPage() {
                         // If I'm buyer, show Product info and Seller info
                         // If I'm seller, show Request info and Buyer info
                         const isBuyer = role === "buyer"
-                        const item = isBuyer ? match.products : match.requests
-                        const partner = isBuyer ? match.products?.profiles : match.requests?.profiles
+                        const item = isBuyer ? match.product : match.request
+
+                        // Helper to get profile safely
+                        const getProfile = (p) => {
+                            if (!p) return null
+                            if (Array.isArray(p)) return p[0]
+                            return p
+                        }
+
+                        // If I'm buyer, I want to see the Seller
+                        // If I'm seller, I want to see the Buyer
+                        const partner = isBuyer ? getProfile(match.seller) : getProfile(match.buyer)
 
                         return (
                             <Card key={match.id} className="bg-zinc-900 border-zinc-800 overflow-hidden">

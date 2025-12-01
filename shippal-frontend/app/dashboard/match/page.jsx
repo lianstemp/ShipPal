@@ -155,6 +155,17 @@ function SwipeCard({ item, onSwipe }) {
         }
     }
 
+    // Helper to get profile data safely
+    const getProfile = (item) => {
+        if (!item.profiles) return null
+        if (Array.isArray(item.profiles)) {
+            return item.profiles[0] || null
+        }
+        return item.profiles
+    }
+
+    const profile = getProfile(item)
+
     return (
         <motion.div
             style={{ x, rotate, opacity }}
@@ -179,12 +190,12 @@ function SwipeCard({ item, onSwipe }) {
 
                     {(item.images && item.images.length > 0) ? (
                         <img src={item.images[0]} alt={item.name || item.title} className="w-full h-full object-cover" />
-                    ) : (item.profiles?.images && item.profiles.images.length > 0) ? (
-                        <img src={item.profiles.images[0]} alt={item.profiles.company_name} className="w-full h-full object-cover" />
+                    ) : (profile?.images && profile.images.length > 0) ? (
+                        <img src={profile.images[0]} alt={profile.company_name} className="w-full h-full object-cover" />
                     ) : item.image_url ? (
                         <img src={item.image_url} alt={item.name || item.title} className="w-full h-full object-cover" />
-                    ) : item.profiles?.avatar_url ? (
-                        <img src={item.profiles.avatar_url} alt={item.profiles.company_name} className="w-full h-full object-cover" />
+                    ) : profile?.avatar_url ? (
+                        <img src={profile.avatar_url} alt={profile.company_name} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900">
                             <Package className="w-20 h-20 text-zinc-700" />
@@ -195,14 +206,14 @@ function SwipeCard({ item, onSwipe }) {
                         <h3 className="text-3xl font-bold text-white mb-1">{item.name || item.title}</h3>
                         <div className="flex items-center gap-2 text-zinc-300">
                             <Building2 className="w-4 h-4" />
-                            <span>{item.profiles?.company_name || "Unknown Company"}</span>
+                            <span>{profile?.company_name || "Unknown Company"}</span>
                         </div>
                     </div>
                 </div>
                 <CardContent className="p-6">
                     <div className="flex items-center gap-2 text-zinc-400 mb-4">
                         <MapPin className="w-4 h-4" />
-                        <span>{item.profiles?.country || "Global"}</span>
+                        <span>{profile?.country || "Global"}</span>
                     </div>
                     <p className="text-zinc-300 line-clamp-3">
                         {item.description || "No description provided."}
