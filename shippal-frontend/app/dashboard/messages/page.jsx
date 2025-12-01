@@ -46,17 +46,17 @@ export default function MessagesPage() {
 
     // Load Messages when selectedMatchId changes
     useEffect(() => {
-        const loadMessages = async () => {
+        const loadMessages = async (silent = false) => {
             if (!selectedMatchId || !user) return
 
-            setLoadingMessages(true)
+            if (!silent) setLoadingMessages(true)
             try {
                 const data = await messagesApi.getByMatchId(selectedMatchId)
                 setMessages(data)
             } catch (error) {
                 console.error("Error loading messages:", error)
             } finally {
-                setLoadingMessages(false)
+                if (!silent) setLoadingMessages(false)
             }
         }
 
@@ -65,10 +65,8 @@ export default function MessagesPage() {
         // Subscribe to new messages
         if (selectedMatchId) {
             const channel = messagesApi.subscribe(selectedMatchId, (payload) => {
-                // Fetch the new message with sender details (or just append if we trust the payload)
-                // Payload doesn't have the join, so simpler to just re-fetch or optimistically add if we had sender info.
-                // For now, let's just re-fetch to be safe and get the join
-                loadMessages()
+                // Reload messages silently to get the new one with joined sender info
+                loadMessages(true)
             })
 
             return () => {
@@ -86,12 +84,24 @@ export default function MessagesPage() {
         e.preventDefault()
         if (!newMessage.trim() || !selectedMatchId || !user) return
 
+        const tempContent = newMessage
+        setNewMessage("") // Clear input immediately
+
         try {
-            await messagesApi.send(selectedMatchId, user.id, newMessage)
-            setNewMessage("")
-            // Message will be added via subscription
+            // Optimistically update UI (optional, but good for UX)
+            // We can't easily construct the full object with sender info without fetching,
+            // but we can try or just wait for the silent reload which is fast.
+            // Let's just wait for the send response which returns the row, 
+            // and maybe we can append it if we don't care about sender info immediately?
+            // Actually, the subscription will fire very quickly. 
+            // But to be super responsive:
+
+            await messagesApi.send(selectedMatchId, user.id, tempContent)
+
+            // The subscription will pick it up and reload.
         } catch (error) {
             console.error("Error sending message:", error)
+            setNewMessage(tempContent) // Restore input on error
         }
     }
 
