@@ -110,15 +110,19 @@ export default function MatchesPage() {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <Link href={`/dashboard/messages/${match.id}`} className="flex-1">
+                                        <Link href={`/dashboard/messages?id=${match.id}`} className="flex-1">
                                             <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white">
                                                 <MessageSquare className="w-4 h-4 mr-2" />
                                                 Chat
                                             </Button>
                                         </Link>
-                                        <Button variant="outline" size="icon" className="border-zinc-700 text-zinc-400 hover:text-white">
-                                            <ExternalLink className="w-4 h-4" />
-                                        </Button>
+                                        {partner && (
+                                            <Link href={`/dashboard/company/${partner.id}`}>
+                                                <Button variant="outline" size="icon" className="border-zinc-700 text-zinc-400 hover:text-white">
+                                                    <ExternalLink className="w-4 h-4" />
+                                                </Button>
+                                            </Link>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
