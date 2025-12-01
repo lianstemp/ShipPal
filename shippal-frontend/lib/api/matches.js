@@ -37,5 +37,17 @@ export const matchesApi = {
             .single()
         if (error) throw error
         return data
+    },
+
+    async updateStatus(id, status) {
+        const { data, error } = await supabase
+            .from('matches')
+            .update({ status })
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) throw error
+        return data
     }
 }
