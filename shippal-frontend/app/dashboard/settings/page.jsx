@@ -7,20 +7,69 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, User, Building2, Globe, Mail } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function SettingsPage() {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [saving, setSaving] = useState(false)
+    const [countries, setCountries] = useState([])
+
+    // Form State
+    const [fullName, setFullName] = useState("")
+    const [companyName, setCompanyName] = useState("")
+    const [selectedCountry, setSelectedCountry] = useState("")
+
     const supabase = createClient()
 
     useEffect(() => {
-        const getUser = async () => {
+        const loadData = async () => {
+            // Fetch User
             const { data: { user } } = await supabase.auth.getUser()
             setUser(user)
+            if (user?.user_metadata) {
+                setFullName(user.user_metadata.full_name || "")
+                setCompanyName(user.user_metadata.company_name || "")
+                setSelectedCountry(user.user_metadata.country || "")
+            }
+
+            // Fetch Countries
+            try {
+                const res = await fetch("https://restcountries.com/v3.1/all?fields=name")
+                const data = await res.json()
+                const sortedCountries = data
+                    .map(c => c.name.common)
+                    .sort((a, b) => a.localeCompare(b))
+                setCountries(sortedCountries)
+            } catch (err) {
+                console.error("Failed to fetch countries:", err)
+            }
+
             setLoading(false)
         }
-        getUser()
+        loadData()
     }, [supabase])
+
+    const handleSave = async () => {
+        setSaving(true)
+        try {
+            const { error } = await supabase.auth.updateUser({
+                data: {
+                    full_name: fullName,
+                    company_name: companyName,
+                    country: selectedCountry
+                }
+            })
+
+            if (error) throw error
+            alert("Profile updated successfully!")
+        } catch (error) {
+            console.error("Error updating profile:", error)
+            alert("Failed to update profile.")
+        } finally {
+            setSaving(false)
+        }
+    }
 
     if (loading) {
         return (
@@ -31,6 +80,7 @@ export default function SettingsPage() {
     }
 
     const metadata = user?.user_metadata || {}
+    const role = metadata.role || "buyer"
 
     return (
         <div className="max-w-3xl mx-auto">
@@ -60,7 +110,11 @@ export default function SettingsPage() {
                             <Label className="text-zinc-300">Full Name</Label>
                             <div className="relative">
                                 <User className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                                <Input defaultValue={metadata.full_name} className="pl-9 bg-zinc-950 border-zinc-800 text-white" />
+                                <Input
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className="pl-9 bg-zinc-950 border-zinc-800 text-white"
+                                />
                             </div>
                         </div>
 
@@ -69,21 +123,50 @@ export default function SettingsPage() {
                                 <Label className="text-zinc-300">Company Name</Label>
                                 <div className="relative">
                                     <Building2 className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                                    <Input defaultValue={metadata.company_name} className="pl-9 bg-zinc-950 border-zinc-800 text-white" />
+                                    <Input
+                                        value={companyName}
+                                        onChange={(e) => setCompanyName(e.target.value)}
+                                        className="pl-9 bg-zinc-950 border-zinc-800 text-white"
+                                    />
                                 </div>
                             </div>
                             <div className="grid gap-2">
                                 <Label className="text-zinc-300">Country</Label>
-                                <div className="relative">
-                                    <Globe className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
-                                    <Input defaultValue={metadata.country} className="pl-9 bg-zinc-950 border-zinc-800 text-white" />
-                                </div>
+                                {role === "seller" ? (
+                                    <div className="relative">
+                                        <Globe className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+                                        <Input
+                                            value="Indonesia"
+                                            disabled
+                                            className="pl-9 bg-zinc-950 border-zinc-800 text-zinc-400 cursor-not-allowed"
+                                        />
+                                        <p className="text-[10px] text-zinc-500 mt-1">Sellers currently limited to Indonesia</p>
+                                    </div>
+                                ) : (
+                                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                                        <SelectTrigger className="w-full bg-zinc-950 border-zinc-800 text-white h-10">
+                                            <SelectValue placeholder="Select country" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-zinc-800 text-white max-h-[200px]">
+                                            {countries.map((country) => (
+                                                <SelectItem key={country} value={country}>
+                                                    {country}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
                             </div>
                         </div>
 
                         <div className="pt-4 flex justify-end">
-                            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-                                Save Changes
+                            <Button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="bg-blue-600 hover:bg-blue-500 text-white"
+                            >
+                                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {saving ? "Saving..." : "Save Changes"}
                             </Button>
                         </div>
                     </CardContent>
