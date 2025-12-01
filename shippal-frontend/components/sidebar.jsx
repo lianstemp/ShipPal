@@ -113,19 +113,29 @@ export function Sidebar({ user }) {
             </div>
 
             <div className="p-4 border-t border-zinc-800">
-                <div className="flex items-center gap-3 mb-4 px-2">
-                    <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold">
-                        {user?.email?.[0].toUpperCase()}
+                {user ? (
+                    <div className="flex items-center gap-3 mb-4 px-2">
+                        <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold">
+                            {user.email?.[0]?.toUpperCase()}
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                            <p className="text-sm font-medium text-white truncate">
+                                {user.user_metadata?.full_name || "User"}
+                            </p>
+                            <p className="text-xs text-zinc-500 truncate">
+                                {user.email}
+                            </p>
+                        </div>
                     </div>
-                    <div className="flex-1 overflow-hidden">
-                        <p className="text-sm font-medium text-white truncate">
-                            {user?.user_metadata?.full_name || "User"}
-                        </p>
-                        <p className="text-xs text-zinc-500 truncate">
-                            {user?.email}
-                        </p>
+                ) : (
+                    <div className="flex items-center gap-3 mb-4 px-2 animate-pulse">
+                        <div className="w-8 h-8 rounded-full bg-zinc-800" />
+                        <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-zinc-800 rounded w-20" />
+                            <div className="h-3 bg-zinc-800 rounded w-32" />
+                        </div>
                     </div>
-                </div>
+                )}
                 <Button
                     variant="outline"
                     className="w-full justify-start gap-3 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900"

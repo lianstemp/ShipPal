@@ -81,13 +81,7 @@ export default function DashboardLayout({ children }) {
         }
     }
 
-    if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-zinc-950">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-            </div>
-        )
-    }
+
 
     return (
         <div className="min-h-screen bg-zinc-950 flex">

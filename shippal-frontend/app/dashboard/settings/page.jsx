@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, User, Building2, Globe, Mail } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ImageUpload } from "@/components/ui/image-upload"
 
@@ -79,8 +80,15 @@ export default function SettingsPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="max-w-3xl mx-auto">
+                <div className="mb-8 space-y-2">
+                    <Skeleton className="h-8 w-48 bg-zinc-800" />
+                    <Skeleton className="h-4 w-64 bg-zinc-800" />
+                </div>
+                <div className="space-y-6">
+                    <Skeleton className="h-[600px] bg-zinc-800 rounded-xl" />
+                    <Skeleton className="h-[300px] bg-zinc-800 rounded-xl" />
+                </div>
             </div>
         )
     }

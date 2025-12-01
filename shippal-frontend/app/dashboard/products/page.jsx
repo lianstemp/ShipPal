@@ -6,6 +6,7 @@ import { productsApi } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Plus, Package, MoreVertical } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { ProductModal } from "@/components/product-modal"
 
@@ -36,8 +37,25 @@ export default function ProductsPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-8">
+                    <div className="space-y-2">
+                        <Skeleton className="h-8 w-48 bg-zinc-800" />
+                        <Skeleton className="h-4 w-64 bg-zinc-800" />
+                    </div>
+                    <Skeleton className="h-10 w-32 bg-zinc-800" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="space-y-4">
+                            <Skeleton className="h-48 bg-zinc-800 rounded-xl" />
+                            <div className="space-y-2">
+                                <Skeleton className="h-6 w-3/4 bg-zinc-800" />
+                                <Skeleton className="h-4 w-full bg-zinc-800" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }

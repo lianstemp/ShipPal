@@ -6,6 +6,7 @@ import { productsApi, requestsApi, swipesApi } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, X, Heart, MapPin, Building2, Package } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion"
 import { MatchDialog } from "@/components/match-dialog"
 
@@ -70,8 +71,14 @@ export default function MatchPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="relative w-full max-w-md h-[600px]">
+                    <Skeleton className="h-full w-full rounded-xl bg-zinc-800" />
+                </div>
+                <div className="flex gap-6 mt-8">
+                    <Skeleton className="w-16 h-16 rounded-full bg-zinc-800" />
+                    <Skeleton className="w-16 h-16 rounded-full bg-zinc-800" />
+                </div>
             </div>
         )
     }

@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MessageSquare, Send, Loader2 } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 export default function MessagesPage() {
@@ -121,8 +122,15 @@ export default function MessagesPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="max-w-7xl mx-auto h-[calc(100vh-100px)] flex flex-col">
+                <div className="mb-6 space-y-2">
+                    <Skeleton className="h-8 w-48 bg-zinc-800" />
+                    <Skeleton className="h-4 w-64 bg-zinc-800" />
+                </div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-0">
+                    <Skeleton className="h-full bg-zinc-800 rounded-xl" />
+                    <Skeleton className="md:col-span-2 h-full bg-zinc-800 rounded-xl" />
+                </div>
             </div>
         )
     }

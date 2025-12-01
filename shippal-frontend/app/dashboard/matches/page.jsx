@@ -6,6 +6,7 @@ import { matchesApi } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, TrendingUp, MessageSquare, ExternalLink } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -90,8 +91,19 @@ export default function MatchesPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="max-w-7xl mx-auto">
+                <div className="mb-8 space-y-2">
+                    <Skeleton className="h-8 w-48 bg-zinc-800" />
+                    <Skeleton className="h-4 w-64 bg-zinc-800" />
+                </div>
+                <div className="space-y-6">
+                    <Skeleton className="h-10 w-full max-w-md bg-zinc-800" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3].map((i) => (
+                            <Skeleton key={i} className="h-64 bg-zinc-800 rounded-xl" />
+                        ))}
+                    </div>
+                </div>
             </div>
         )
     }

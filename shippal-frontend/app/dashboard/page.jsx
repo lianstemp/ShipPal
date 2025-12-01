@@ -6,6 +6,7 @@ import { productsApi, requestsApi, matchesApi } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Package, MessageSquare, TrendingUp, FileText, Plus } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -64,8 +65,25 @@ export default function DashboardPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-8 w-48 bg-zinc-800" />
+                        <Skeleton className="h-4 w-64 bg-zinc-800" />
+                    </div>
+                    <Skeleton className="h-10 w-40 bg-zinc-800" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Skeleton key={i} className="h-32 bg-zinc-800 rounded-xl" />
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <Skeleton className="lg:col-span-2 h-80 bg-zinc-800 rounded-xl" />
+                    <Skeleton className="h-80 bg-zinc-800 rounded-xl" />
+                </div>
             </div>
         )
     }
