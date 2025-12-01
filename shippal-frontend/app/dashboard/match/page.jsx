@@ -177,8 +177,8 @@ function SwipeCard({ item, onSwipe }) {
                         <span className="text-4xl font-bold text-red-500 uppercase">Nope</span>
                     </motion.div>
 
-                    {item.image_url ? (
-                        <img src={item.image_url} alt={item.name || item.title} className="w-full h-full object-cover" />
+                    {(item.images && item.images.length > 0) || item.image_url ? (
+                        <img src={item.images?.[0] || item.image_url} alt={item.name || item.title} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900">
                             <Package className="w-20 h-20 text-zinc-700" />

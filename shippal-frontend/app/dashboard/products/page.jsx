@@ -70,8 +70,8 @@ export default function ProductsPage() {
                     {products.map((product) => (
                         <Card key={product.id} className="bg-zinc-900 border-zinc-800 overflow-hidden group hover:border-zinc-700 transition-colors">
                             <div className="h-48 bg-zinc-800 relative">
-                                {product.image_url ? (
-                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                {product.images && product.images.length > 0 ? (
+                                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
                                         <Package className="w-12 h-12 text-zinc-700" />
