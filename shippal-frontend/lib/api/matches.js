@@ -3,9 +3,14 @@ import { createClient } from "@/lib/supabase/client"
 const supabase = createClient()
 
 export const matchesApi = {
-    async getAll() {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) throw new Error("Unauthorized")
+    async getAll(userId) {
+        // If userId is provided, use it. Otherwise fetch from auth.
+        let uid = userId
+        if (!uid) {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error("Unauthorized")
+            uid = user.id
+        }
 
         const { data, error } = await supabase
             .from('matches')
@@ -16,7 +21,7 @@ export const matchesApi = {
                 buyer:profiles!buyer_id(*),
                 seller:profiles!seller_id(*)
             `)
-            .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+            .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
             .order('created_at', { ascending: false })
 
         if (error) throw error
@@ -27,14 +32,15 @@ export const matchesApi = {
         const { data, error } = await supabase
             .from('matches')
             .select(`
-            *,
-            product: products(*),
-                request: buying_requests(*),
-                    buyer: profiles!matches_buyer_id_fkey(*),
-                        seller: profiles!matches_seller_id_fkey(*)
-                            `)
+                *,
+                product:products(*, profiles(*)),
+                request:buying_requests(*, profiles(*)),
+                buyer:profiles!buyer_id(*),
+                seller:profiles!seller_id(*)
+            `)
             .eq('id', id)
             .single()
+
         if (error) throw error
         return data
     },

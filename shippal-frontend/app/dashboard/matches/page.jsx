@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { matchesApi } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,38 +9,77 @@ import { Loader2, TrendingUp, MessageSquare, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+
 export default function MatchesPage() {
     const [matches, setMatches] = useState([])
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
     const supabase = createClient()
 
+    const userRef = useRef(null)
+
+
+
     useEffect(() => {
+        let channel = null
+
         const loadMatches = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-            if (user) {
-                try {
-                    const data = await matchesApi.getAll(user.id)
+            try {
+                const { data: { user: currentUser } } = await supabase.auth.getUser()
+                setUser(currentUser)
+                userRef.current = currentUser
+
+                if (currentUser) {
+                    const data = await matchesApi.getAll(currentUser.id)
                     setMatches(data)
-                } catch (error) {
-                    console.error("Error loading matches:", error)
-                    console.error("Error details:", {
-                        message: error.message,
-                        code: error.code,
-                        details: error.details,
-                        hint: error.hint
-                    })
+
+                    // Subscribe to match updates
+                    channel = supabase
+                        .channel('matches-updates')
+                        .on('postgres_changes', {
+                            event: 'UPDATE',
+                            schema: 'public',
+                            table: 'matches',
+                            filter: `buyer_id=eq.${currentUser.id}`
+                        }, (payload) => handleMatchUpdate(payload, currentUser))
+                        .on('postgres_changes', {
+                            event: 'UPDATE',
+                            schema: 'public',
+                            table: 'matches',
+                            filter: `seller_id=eq.${currentUser.id}`
+                        }, (payload) => handleMatchUpdate(payload, currentUser))
+                        .subscribe()
                 }
+            } catch (error) {
+                console.error("Error loading matches:", error)
+            } finally {
+                setLoading(false)
             }
-            setLoading(false)
         }
+
         loadMatches()
+
+        return () => {
+            if (channel) {
+                supabase.removeChannel(channel)
+            }
+        }
     }, [supabase])
+
+    const handleMatchUpdate = async (payload, currentUser) => {
+        const { new: newRecord, old: oldRecord } = payload
+        const userToUse = currentUser || userRef.current
+
+        // Refresh matches list
+        if (userToUse) {
+            const data = await matchesApi.getAll(userToUse.id)
+            setMatches(data)
+        }
+    }
 
     const handleStatusUpdate = async (id, status) => {
         try {
-            await matchesApi.updateStatus(id, status)
+            const updatedMatch = await matchesApi.updateStatus(id, status)
             // Refresh matches
             const data = await matchesApi.getAll(user.id)
             setMatches(data)

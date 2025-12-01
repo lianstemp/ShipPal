@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, X, Heart, MapPin, Building2, Package } from "lucide-react"
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion"
+import { MatchDialog } from "@/components/match-dialog"
 
 export default function MatchPage() {
     const [user, setUser] = useState(null)
@@ -49,9 +50,18 @@ export default function MatchPage() {
             const targetType = user.user_metadata?.role === "buyer" ? "product" : "request"
             const match = await swipesApi.swipe(item.id, targetType, direction)
 
-            if (match) {
-                setMatchAnimation(item)
-                setTimeout(() => setMatchAnimation(null), 3000)
+            if (match && match.status === 'matched') {
+                // Get partner info for the dialog
+                // If I am buyer, partner is seller. If I am seller, partner is buyer.
+                // But wait, swipesApi.swipe returns the match object.
+                // We need to fetch the partner profile to show in the dialog?
+                // Or just use the item's profile which we already have.
+                // If I am buyer swiping product, item.profiles is the seller.
+                // If I am seller swiping request, item.profiles is the buyer.
+                // So item.profiles is always the partner!
+
+                const partner = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
+                setMatchAnimation({ match, partner })
             }
         } catch (error) {
             console.error("Error swiping:", error)
@@ -83,26 +93,13 @@ export default function MatchPage() {
     return (
         <div className="h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
             {/* Match Overlay */}
-            <AnimatePresence>
-                {matchAnimation && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
-                        className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-                    >
-                        <div className="text-center">
-                            <h2 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-4 animate-bounce">
-                                It's a Match!
-                            </h2>
-                            <p className="text-xl text-white mb-8">You can now chat in the Deal Room.</p>
-                            <Button size="lg" className="bg-white text-black hover:bg-zinc-200" onClick={() => setMatchAnimation(null)}>
-                                Keep Swiping
-                            </Button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Match Overlay */}
+            <MatchDialog
+                isOpen={!!matchAnimation}
+                onClose={() => setMatchAnimation(null)}
+                match={matchAnimation?.match}
+                partner={matchAnimation?.partner}
+            />
 
             <div className="relative w-full max-w-md h-[600px]">
                 <AnimatePresence>
