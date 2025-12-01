@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, User, Building2, Globe, Mail } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 export default function SettingsPage() {
     const [user, setUser] = useState(null)
@@ -19,6 +20,7 @@ export default function SettingsPage() {
     const [fullName, setFullName] = useState("")
     const [companyName, setCompanyName] = useState("")
     const [selectedCountry, setSelectedCountry] = useState("")
+    const [images, setImages] = useState([])
 
     const supabase = createClient()
 
@@ -31,6 +33,7 @@ export default function SettingsPage() {
                 setFullName(user.user_metadata.full_name || "")
                 setCompanyName(user.user_metadata.company_name || "")
                 setSelectedCountry(user.user_metadata.country || "")
+                setImages(user.user_metadata.images || [])
             }
 
             // Fetch Countries
@@ -57,7 +60,10 @@ export default function SettingsPage() {
                 data: {
                     full_name: fullName,
                     company_name: companyName,
-                    country: selectedCountry
+                    full_name: fullName,
+                    company_name: companyName,
+                    country: selectedCountry,
+                    images: images
                 }
             })
 
@@ -157,6 +163,18 @@ export default function SettingsPage() {
                                     </Select>
                                 )}
                             </div>
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label className="text-zinc-300">Company Images</Label>
+                            <ImageUpload
+                                value={images}
+                                onChange={setImages}
+                                maxFiles={5}
+                            />
+                            <p className="text-xs text-zinc-500">
+                                Upload up to 5 images of your company, factory, or products.
+                            </p>
                         </div>
 
                         <div className="pt-4 flex justify-end">

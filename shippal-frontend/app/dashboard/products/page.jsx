@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Plus, Package, MoreVertical } from "lucide-react"
 import Link from "next/link"
+import { ProductModal } from "@/components/product-modal"
 
 export default function ProductsPage() {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [selectedProduct, setSelectedProduct] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const supabase = createClient()
 
     useEffect(() => {
@@ -39,6 +42,35 @@ export default function ProductsPage() {
         )
     }
 
+
+
+    const handleEdit = (product) => {
+        setSelectedProduct(product)
+        setIsModalOpen(true)
+    }
+
+    const handleAddNew = () => {
+        setSelectedProduct(null)
+        setIsModalOpen(true)
+    }
+
+    const handleSuccess = () => {
+        // Reload products
+        const loadProducts = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                try {
+                    const allProducts = await productsApi.getAll()
+                    const myProducts = allProducts.filter(p => p.seller_id === user.id)
+                    setProducts(myProducts)
+                } catch (error) {
+                    console.error("Error loading products:", error)
+                }
+            }
+        }
+        loadProducts()
+    }
+
     return (
         <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
@@ -46,12 +78,10 @@ export default function ProductsPage() {
                     <h1 className="text-3xl font-bold text-white">My Products</h1>
                     <p className="text-zinc-400">Manage your product listings</p>
                 </div>
-                <Link href="/dashboard/products/new">
-                    <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Product
-                    </Button>
-                </Link>
+                <Button onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-500 text-white">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Product
+                </Button>
             </div>
 
             {products.length === 0 ? (
@@ -59,11 +89,9 @@ export default function ProductsPage() {
                     <Package className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
                     <h3 className="text-xl font-medium text-white mb-2">No products listed</h3>
                     <p className="text-zinc-400 mb-6">Start selling by listing your first product.</p>
-                    <Link href="/dashboard/products/new">
-                        <Button variant="outline" className="border-zinc-700 text-white hover:bg-zinc-800">
-                            List a Product
-                        </Button>
-                    </Link>
+                    <Button onClick={handleAddNew} variant="outline" className="border-zinc-700 text-white hover:bg-zinc-800">
+                        List a Product
+                    </Button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -81,7 +109,12 @@ export default function ProductsPage() {
                             <CardContent className="p-6">
                                 <div className="flex justify-between items-start mb-2">
                                     <h3 className="text-lg font-bold text-white line-clamp-1">{product.name}</h3>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-zinc-400 hover:text-white"
+                                        onClick={() => handleEdit(product)}
+                                    >
                                         <MoreVertical className="w-4 h-4" />
                                     </Button>
                                 </div>
@@ -100,6 +133,13 @@ export default function ProductsPage() {
                     ))}
                 </div>
             )}
+
+            <ProductModal
+                open={isModalOpen}
+                onOpenChange={setIsModalOpen}
+                product={selectedProduct}
+                onSuccess={handleSuccess}
+            />
         </div>
     )
 }

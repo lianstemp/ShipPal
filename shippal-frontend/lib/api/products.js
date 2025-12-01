@@ -52,7 +52,7 @@ export const productsApi = {
         const swipedIds = swipes.map(s => s.target_id)
 
         // 2. Fetch products not in swipedIds
-        let query = supabase.from('products').select('*, profiles(full_name, company_name, country, avatar_url)')
+        let query = supabase.from('products').select('*, profiles(full_name, company_name, country, avatar_url, images)')
 
         if (swipedIds.length > 0) {
             query = query.not('id', 'in', `(${swipedIds.join(',')})`)
