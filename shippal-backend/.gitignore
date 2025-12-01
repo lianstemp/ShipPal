@@ -9,3 +9,6 @@
 
 supabase/config.toml
 supabase/.temp
+*/__pycache__/*
+
+scripts/*
