@@ -53,12 +53,7 @@ export function Sidebar({ user }) {
             icon: FileText,
             roles: ["buyer"]
         },
-        {
-            href: "/dashboard/matches",
-            label: "Matches",
-            icon: TrendingUp,
-            roles: ["buyer", "seller"]
-        },
+
         {
             href: "/dashboard/messages",
             label: "Messages",

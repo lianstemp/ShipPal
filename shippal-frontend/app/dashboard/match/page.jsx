@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { productsApi, requestsApi, swipesApi } from "@/lib/api"
+import { productsApi, requestsApi, swipesApi, matchesApi } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, X, Heart, MapPin, Building2, Package } from "lucide-react"
@@ -25,15 +25,41 @@ export default function MatchPage() {
             if (user) {
                 const role = user.user_metadata?.role || "buyer"
                 try {
-                    let data = []
+                    // 1. Fetch Incoming Likes (Pending Matches)
+                    const pendingMatches = await matchesApi.getPendingIncoming(user.id, role)
+
+                    // Transform pending matches into swipeable items
+                    const incomingItems = pendingMatches.map(m => {
+                        // If I am Buyer, I see Seller. If I am Seller, I see Buyer.
+                        const partner = role === 'buyer'
+                            ? (Array.isArray(m.seller) ? m.seller[0] : m.seller)
+                            : (Array.isArray(m.buyer) ? m.buyer[0] : m.buyer)
+
+                        return {
+                            id: m.id, // Use match ID as item ID for incoming
+                            isIncoming: true,
+                            matchData: m,
+                            // Construct a profile-like object
+                            name: partner.full_name,
+                            description: role === 'buyer'
+                                ? `Liked your request: ${m.request?.title}`
+                                : `Liked your product: ${m.product?.name}`,
+                            image_url: partner.avatar_url,
+                            profiles: partner,
+                            tags: ['Incoming Request']
+                        }
+                    })
+
+                    // 2. Fetch Regular Unswiped Items
+                    let regularItems = []
                     if (role === "buyer") {
-                        // Buyers swipe on Products
-                        data = await productsApi.getUnswiped(user.id)
+                        regularItems = await productsApi.getUnswiped(user.id)
                     } else {
-                        // Sellers swipe on Requests
-                        data = await requestsApi.getUnswiped(user.id)
+                        regularItems = await requestsApi.getUnswiped(user.id)
                     }
-                    setItems(data || [])
+
+                    // Combine: Incoming first
+                    setItems([...incomingItems, ...(regularItems || [])])
                 } catch (error) {
                     console.error("Error loading items:", error)
                 }
@@ -44,25 +70,31 @@ export default function MatchPage() {
     }, [supabase])
 
     const handleSwipe = async (direction, item) => {
-        // Remove item from list immediately for UI responsiveness
+        // Remove item from list immediately
         setItems(prev => prev.filter(i => i.id !== item.id))
 
         try {
-            const targetType = user.user_metadata?.role === "buyer" ? "product" : "request"
-            const match = await swipesApi.swipe(item.id, targetType, direction)
+            if (item.isIncoming) {
+                // Handle Incoming Match Response
+                const status = direction === 'right' ? 'matched' : 'rejected'
+                await matchesApi.updateStatus(item.matchData.id, status)
 
-            if (match && match.status === 'matched') {
-                // Get partner info for the dialog
-                // If I am buyer, partner is seller. If I am seller, partner is buyer.
-                // But wait, swipesApi.swipe returns the match object.
-                // We need to fetch the partner profile to show in the dialog?
-                // Or just use the item's profile which we already have.
-                // If I am buyer swiping product, item.profiles is the seller.
-                // If I am seller swiping request, item.profiles is the buyer.
-                // So item.profiles is always the partner!
+                if (status === 'matched') {
+                    // Show celebration
+                    setMatchAnimation({
+                        match: item.matchData,
+                        partner: item.profiles
+                    })
+                }
+            } else {
+                // Handle Regular Swipe
+                const targetType = user.user_metadata?.role === "buyer" ? "product" : "request"
+                const match = await swipesApi.swipe(item.id, targetType, direction)
 
-                const partner = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
-                setMatchAnimation({ match, partner })
+                if (match && match.status === 'matched') {
+                    const partner = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
+                    setMatchAnimation({ match, partner })
+                }
             }
         } catch (error) {
             console.error("Error swiping:", error)
@@ -99,8 +131,6 @@ export default function MatchPage() {
 
     return (
         <div className="h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
-            {/* Match Overlay */}
-            {/* Match Overlay */}
             <MatchDialog
                 isOpen={!!matchAnimation}
                 onClose={() => setMatchAnimation(null)}
@@ -147,7 +177,6 @@ function SwipeCard({ item, onSwipe }) {
     const rotate = useTransform(x, [-200, 200], [-15, 15])
     const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0])
 
-    // Color overlays
     const likeOpacity = useTransform(x, [0, 100], [0, 1])
     const nopeOpacity = useTransform(x, [-100, 0], [1, 0])
 
@@ -159,7 +188,6 @@ function SwipeCard({ item, onSwipe }) {
         }
     }
 
-    // Helper to get profile data safely
     const getProfile = (item) => {
         if (!item.profiles) return null
         if (Array.isArray(item.profiles)) {
@@ -182,9 +210,16 @@ function SwipeCard({ item, onSwipe }) {
             className="absolute inset-0 cursor-grab active:cursor-grabbing"
         >
             <Card className="h-full w-full overflow-hidden bg-zinc-900 border-zinc-800 shadow-2xl relative">
-                {/* Image Placeholder */}
                 <div className="h-2/3 bg-zinc-800 relative">
-                    {/* Overlays */}
+                    {/* Incoming Badge */}
+                    {item.isIncoming && (
+                        <div className="absolute top-4 left-0 right-0 flex justify-center z-20">
+                            <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                                Liked You!
+                            </div>
+                        </div>
+                    )}
+
                     <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 border-4 border-green-500 rounded-lg px-4 py-2 -rotate-12 z-10">
                         <span className="text-4xl font-bold text-green-500 uppercase">Like</span>
                     </motion.div>

@@ -45,6 +45,31 @@ export const matchesApi = {
         return data
     },
 
+    async getPendingIncoming(userId, role) {
+        let query = supabase
+            .from('matches')
+            .select(`
+                *,
+                product:products(*, profiles(*)),
+                request:buying_requests(*, profiles(*)),
+                buyer:profiles!buyer_id(*),
+                seller:profiles!seller_id(*)
+            `)
+            .eq('status', 'pending')
+
+        if (role === 'buyer') {
+            // Buyer sees matches where Seller liked their Request
+            query = query.eq('buyer_id', userId).not('request_id', 'is', null)
+        } else {
+            // Seller sees matches where Buyer liked their Product
+            query = query.eq('seller_id', userId).not('product_id', 'is', null)
+        }
+
+        const { data, error } = await query
+        if (error) throw error
+        return data
+    },
+
     async updateStatus(id, status) {
         const { data, error } = await supabase
             .from('matches')
