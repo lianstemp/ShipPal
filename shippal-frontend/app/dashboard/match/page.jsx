@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { productsApi, requestsApi, swipesApi, matchesApi } from "@/lib/api"
+import { productsApi, requestsApi, swipesApi, matchesApi, contactsApi } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, X, Heart, MapPin, Building2, Package } from "lucide-react"
@@ -80,11 +80,50 @@ export default function MatchPage() {
                 await matchesApi.updateStatus(item.matchData.id, status)
 
                 if (status === 'matched') {
+                    // Create Contact
+                    const { buyer_id, seller_id } = item.matchData
+
+                    // Check if contact already exists
+                    const { data: existingContact, error: fetchError } = await supabase
+                        .from('contacts')
+                        .select()
+                        .match({ buyer_id, seller_id })
+                        .single()
+
+                    let contact = existingContact
+
+                    if (!contact) {
+                        const { data: newContact, error: createError } = await supabase
+                            .from('contacts')
+                            .insert({ buyer_id, seller_id })
+                            .select()
+                            .single()
+
+                        if (createError) {
+                            // If error is unique constraint violation, try fetching again (race condition)
+                            if (createError.code === '23505') {
+                                const { data: retryContact } = await supabase
+                                    .from('contacts')
+                                    .select()
+                                    .match({ buyer_id, seller_id })
+                                    .single()
+                                contact = retryContact
+                            } else {
+                                throw createError
+                            }
+                        } else {
+                            contact = newContact
+                        }
+                    }
+
                     // Show celebration
-                    setMatchAnimation({
-                        match: item.matchData,
-                        partner: item.profiles
-                    })
+                    if (contact) {
+                        setMatchAnimation({
+                            match: item.matchData,
+                            partner: item.profiles,
+                            contactId: contact.id
+                        })
+                    }
                 }
             } else {
                 // Handle Regular Swipe
@@ -92,12 +131,50 @@ export default function MatchPage() {
                 const match = await swipesApi.swipe(item.id, targetType, direction)
 
                 if (match && match.status === 'matched') {
-                    const partner = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
-                    setMatchAnimation({ match, partner })
+                    // Create Contact
+                    const { buyer_id, seller_id } = match
+
+                    // Check if contact already exists
+                    const { data: existingContact, error: fetchError } = await supabase
+                        .from('contacts')
+                        .select()
+                        .match({ buyer_id, seller_id })
+                        .single()
+
+                    let contact = existingContact
+
+                    if (!contact) {
+                        const { data: newContact, error: createError } = await supabase
+                            .from('contacts')
+                            .insert({ buyer_id, seller_id })
+                            .select()
+                            .single()
+
+                        if (createError) {
+                            // If error is unique constraint violation, try fetching again (race condition)
+                            if (createError.code === '23505') {
+                                const { data: retryContact } = await supabase
+                                    .from('contacts')
+                                    .select()
+                                    .match({ buyer_id, seller_id })
+                                    .single()
+                                contact = retryContact
+                            } else {
+                                throw createError
+                            }
+                        } else {
+                            contact = newContact
+                        }
+                    }
+
+                    if (contact) {
+                        const partner = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
+                        setMatchAnimation({ match, partner, contactId: contact.id })
+                    }
                 }
             }
         } catch (error) {
-            console.error("Error swiping:", error)
+            console.error("Error swiping:", error, error.message || "", error.details || "")
         }
     }
 
@@ -136,6 +213,7 @@ export default function MatchPage() {
                 onClose={() => setMatchAnimation(null)}
                 match={matchAnimation?.match}
                 partner={matchAnimation?.partner}
+                contactId={matchAnimation?.contactId}
             />
 
             <div className="relative w-full max-w-md h-[600px]">

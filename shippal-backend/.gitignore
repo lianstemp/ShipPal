@@ -12,3 +12,5 @@ supabase/.temp
 */__pycache__/*
 
 scripts/*
+.env*
+__pycache__

@@ -1,0 +1,107 @@
+name: Deploy Shippal Backend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      # Supabase
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      
+      # OpenRouter
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENROUTER_BASE_URL: ${{ secrets.OPENROUTER_BASE_URL }}
+      OPENROUTER_MODEL_ID: ${{ secrets.OPENROUTER_MODEL_ID }}
+      
+      # App Defaults
+      HOST: "0.0.0.0"
+      PORT: "8000"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Ensure ECR repository exists
+        env:
+          ECR_REPOSITORY: shippal-backend
+        run: |
+          set -e
+          aws ecr describe-repositories --repository-names "$ECR_REPOSITORY" || \
+          aws ecr create-repository --repository-name "$ECR_REPOSITORY"
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: shippal-backend
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build from the shippal-backend directory
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./shippal-backend
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Cleanup old ECR images (keep latest 2)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: shippal-backend
+        run: |
+          # Get all tagged images sorted by pushedAt (newest first), delete all except the top 2
+          OLD_IMAGES=$(aws ecr describe-images \
+            --repository-name $ECR_REPOSITORY \
+            --query 'imageDetails[?imageTag != null].[imageDigest, imagePushedAt]' \
+            --output json | \
+            jq -s 'sort_by(.[1]) | reverse | .[2:] | map(.[0])' | \
+            jq -r '.[]')
+          
+          if [ "$OLD_IMAGES" != "null" ] && [ -n "$OLD_IMAGES" ]; then
+            echo "Deleting old images: $OLD_IMAGES"
+            echo "$OLD_IMAGES" | xargs -I {} aws ecr batch-delete-image \
+              --repository-name $ECR_REPOSITORY \
+              --image-ids imageDigest={}
+          else
+            echo "No old images to delete (keeping latest 2)"
+          fi
+
+      - name: Deploy to App Runner Image
+        id: deploy-apprunner
+        uses: awslabs/amazon-app-runner-deploy@main
+        with:
+          service: shippal-backend
+          image: ${{ steps.build-image.outputs.image }}
+          access-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          region: ${{ secrets.AWS_REGION }}
+          cpu: 1
+          memory: 2
+          port: "8000"
+          copy-env-vars: |
+            SUPABASE_URL
+            SUPABASE_SERVICE_KEY
+            OPENROUTER_API_KEY
+            OPENROUTER_BASE_URL
+            OPENROUTER_MODEL_ID
+            HOST
+            PORT
+          wait-for-service-stability-seconds: 1200
+
+      - name: App Runner URL
+        run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"

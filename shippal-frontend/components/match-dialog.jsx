@@ -8,7 +8,7 @@ import { motion } from "framer-motion"
 import confetti from "canvas-confetti"
 import { useEffect } from "react"
 
-export function MatchDialog({ isOpen, onClose, match, partner }) {
+export function MatchDialog({ isOpen, onClose, match, partner, contactId }) {
     useEffect(() => {
         if (isOpen) {
             const duration = 3 * 1000
@@ -71,7 +71,7 @@ export function MatchDialog({ isOpen, onClose, match, partner }) {
                     </div>
 
                     <div className="flex flex-col gap-3 w-full relative z-10">
-                        <Link href={`/dashboard/messages?id=${match.id}`} className="w-full">
+                        <Link href={contactId ? `/dashboard/messages?id=${contactId}` : `/dashboard/messages?id=${match.id}`} className="w-full">
                             <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white h-12 text-lg">
                                 Send a Message
                             </Button>

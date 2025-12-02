@@ -12,10 +12,19 @@ import {
     Settings,
     LogOut,
     FileText,
-    TrendingUp
+    TrendingUp,
+    Users
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Sidebar({ user }) {
     const pathname = usePathname()
@@ -42,6 +51,12 @@ export function Sidebar({ user }) {
             roles: ["buyer", "seller"]
         },
         {
+            href: "/dashboard/contacts",
+            label: "Contacts",
+            icon: Users,
+            roles: ["buyer", "seller"]
+        },
+        {
             href: "/dashboard/products",
             label: "My Products",
             icon: Package,
@@ -58,12 +73,6 @@ export function Sidebar({ user }) {
             href: "/dashboard/messages",
             label: "Messages",
             icon: MessageSquare,
-            roles: ["buyer", "seller"]
-        },
-        {
-            href: "/dashboard/settings",
-            label: "Settings",
-            icon: Settings,
             roles: ["buyer", "seller"]
         }
     ]
@@ -109,19 +118,45 @@ export function Sidebar({ user }) {
 
             <div className="p-4 border-t border-zinc-800">
                 {user ? (
-                    <div className="flex items-center gap-3 mb-4 px-2">
-                        <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold">
-                            {user.email?.[0]?.toUpperCase()}
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                            <p className="text-sm font-medium text-white truncate">
-                                {user.user_metadata?.full_name || "User"}
-                            </p>
-                            <p className="text-xs text-zinc-500 truncate">
-                                {user.email}
-                            </p>
-                        </div>
-                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="w-full justify-start px-2 hover:bg-zinc-900 h-auto py-2">
+                                <div className="flex items-center gap-3 w-full">
+                                    <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold shrink-0">
+                                        {user.email?.[0]?.toUpperCase()}
+                                    </div>
+                                    <div className="flex-1 overflow-hidden text-left">
+                                        <p className="text-sm font-medium text-white truncate">
+                                            {user.user_metadata?.full_name || "User"}
+                                        </p>
+                                        <p className="text-xs text-zinc-500 truncate">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </div>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 bg-zinc-900 border-zinc-800 text-white" align="end" forceMount>
+                            <DropdownMenuLabel className="font-normal">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">{user.user_metadata?.full_name || "User"}</p>
+                                    <p className="text-xs leading-none text-zinc-400">{user.email}</p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator className="bg-zinc-800" />
+                            <DropdownMenuItem asChild className="focus:bg-zinc-800 focus:text-white cursor-pointer">
+                                <Link href="/dashboard/settings">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-zinc-800" />
+                            <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:bg-red-500/10 focus:text-red-500 cursor-pointer">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Sign out</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 ) : (
                     <div className="flex items-center gap-3 mb-4 px-2 animate-pulse">
                         <div className="w-8 h-8 rounded-full bg-zinc-800" />
@@ -131,14 +166,6 @@ export function Sidebar({ user }) {
                         </div>
                     </div>
                 )}
-                <Button
-                    variant="outline"
-                    className="w-full justify-start gap-3 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900"
-                    onClick={handleSignOut}
-                >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                </Button>
             </div>
         </div>
     )
