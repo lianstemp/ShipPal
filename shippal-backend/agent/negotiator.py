@@ -1,23 +1,17 @@
 import os
-from strands import Agent
-from strands.models.openai import OpenAIModel
+from openai import OpenAI
 from utils.supabase_client import supabase
 
-openrouter_api_key = os.environ.get("OPENROUTER_API_KEY")
-openrouter_base_url = os.environ.get("OPENROUTER_BASE_URL")
+# Use OpenAI SDK directly to avoid Strands Agent bug with empty tools array
+llm_api_key = os.environ.get("LLM_API_KEY")
+llm_base_url = os.environ.get("LLM_BASE_URL")
+llm_model_id = os.environ.get("LLM_MODEL_ID")
 
-model = OpenAIModel(
-    client_args={
-        "api_key": openrouter_api_key,
-        "base_url": openrouter_base_url,
-    },
-    model_id=os.environ.get("OPENROUTER_MODEL_ID"),
-    params={
-        "temperature": 0.7,
-    }
+# Initialize OpenAI client directly
+client = OpenAI(
+    api_key=llm_api_key,
+    base_url=llm_base_url
 )
-
-agent = Agent(model=model)
 
 async def handle_incoming_message(message: dict):
     """
@@ -76,7 +70,7 @@ async def handle_incoming_message(message: dict):
                 items_list.append(f"- {item['name']} (Qty: {item['quantity']}, Price: {item['price_per_unit']})")
             deal_items_str = "\n".join(items_list)
 
-    # Construct prompt
+    # Construct system prompt
     system_prompt = f"""You are ShipPal AI, a smart B2B negotiation assistant.
     You are assisting a negotiation between:
     - Buyer: {buyer_name} ({contact['buyer']['company_name']}) from {buyer_country}
@@ -102,31 +96,33 @@ async def handle_incoming_message(message: dict):
     5. IMPORTANT: DO NOT use markdown bolding (asterisks like **text**). Use plain text only.
     """
 
-    conversation_text = f"System: {system_prompt}\n"
-    for msg in messages_history:
-        role = "AI" if msg.get("is_ai_generated") else ("Buyer" if msg.get("sender_id") == contact['buyer_id'] else "Seller")
-        conversation_text += f"{role}: {msg.get('content_original', '')}\n"
+    # Build messages array for OpenAI
+    messages = [
+        {"role": "system", "content": system_prompt}
+    ]
     
-    conversation_text += "AI:"
+    # Add conversation history
+    for msg in messages_history:
+        role = "assistant" if msg.get("is_ai_generated") else "user"
+        messages.append({"role": role, "content": msg.get('content_original', '')})
+    
+    # Add current message
+    messages.append({"role": "user", "content": content})
 
-    # Generate response
+    # Generate response using OpenAI directly
     try:
-        # Run agent
-        response = agent(conversation_text)
-        ai_reply = response.text if hasattr(response, 'text') else str(response)
+        # Call OpenAI API without tools parameter
+        response = client.chat.completions.create(
+            model=llm_model_id,
+            messages=messages,
+            temperature=0.7
+        )
+        ai_reply = response.choices[0].message.content
 
         # Save AI response
-        # IMPORTANT: sender_id for AI should be distinct or handled by frontend. 
-        # For now, we reuse the contact's buyer_id or seller_id but mark is_ai_generated=True.
-        # Ideally, we should have a system user ID. 
-        # Let's use the sender_id of the person who triggered it, but the frontend knows it's AI via the flag.
-        # Actually, let's use the contact's seller_id as the "host" but mark it AI.
-        
         supabase.table("messages").insert({
             "contact_id": contact_id,
-            "sender_id": sender_id, # Attributed to the user who triggered it, but marked AI. Or maybe NULL?
-            # If we use NULL, frontend might break if it expects a UUID.
-            # Let's use the sender_id for now as it was before, but the frontend renders it as AI.
+            "sender_id": sender_id,
             "content_original": ai_reply,
             "is_ai_generated": True,
             "language_code": "en"

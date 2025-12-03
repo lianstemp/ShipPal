@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List, Optional
 from utils.supabase_client import supabase
@@ -30,7 +30,7 @@ async def get_messages(contact_id: str):
     return response.data
 
 @router.post("/message", response_model=MessageResponse)
-async def send_message(message: MessageCreate):
+async def send_message(message: MessageCreate, background_tasks: BackgroundTasks):
     """
     Send a message. Triggers AI Negotiator.
     """
@@ -48,11 +48,7 @@ async def send_message(message: MessageCreate):
     
     saved_message = response.data[0]
 
-    # Trigger AI Negotiator
-    # We do this asynchronously or synchronously.
-    try:
-        await handle_incoming_message(saved_message)
-    except Exception as e:
-        print(f"Error in AI negotiator: {e}")
+    # Trigger AI Negotiator in background
+    background_tasks.add_task(handle_incoming_message, saved_message)
 
     return saved_message

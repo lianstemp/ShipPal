@@ -71,7 +71,7 @@ export function Sidebar({ user }) {
 
         {
             href: "/dashboard/messages",
-            label: "Messages",
+            label: "Deal Room",
             icon: MessageSquare,
             roles: ["buyer", "seller"]
         }

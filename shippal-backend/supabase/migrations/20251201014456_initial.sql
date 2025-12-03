@@ -166,28 +166,44 @@ with check (exists (select 1 from public.matches where id = match_id and (buyer_
 -- ==============================================================================
 -- 9. FUNCTIONS & TRIGGERS (EMAIL/PASSWORD AUTOMATION)
 -- ==============================================================================
+-- Trigger: Otomatis buat profile saat user sign up
 
--- Trigger: Otomatis buat profil publik saat User Sign Up (Email/Password)
 create or replace function public.handle_new_user()
 returns trigger 
 security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, full_name, avatar_url, email, role)
+  insert into public.profiles (
+    id,
+    full_name,
+    avatar_url,
+    email,
+    role,
+    company_name,
+    country
+  )
   values (
-    new.id, 
-    -- Ambil dari metadata jika dikirim saat signup, jika tidak biarkan null dulu
-    new.raw_user_meta_data->>'full_name', 
-    new.raw_user_meta_data->>'avatar_url', 
+    new.id,
+
+    -- metadata basic
+    COALESCE(new.raw_user_meta_data->>'full_name', ''),
+    COALESCE(new.raw_user_meta_data->>'avatar_url', ''),
     new.email,
-    -- Ambil role dari metadata, default ke 'seller' jika tidak ada (meskipun harusnya ada)
-    -- Pastikan lowercase agar sesuai dengan enum
-    COALESCE(LOWER(new.raw_user_meta_data->>'role'), 'seller')::public.user_role
+
+    -- role enum fallback ke seller
+    COALESCE(LOWER(new.raw_user_meta_data->>'role'), 'seller')::public.user_role,
+
+    -- optional metadata
+    COALESCE(new.raw_user_meta_data->>'company_name', ''),
+    COALESCE(new.raw_user_meta_data->>'country', '')
+
   );
+
   return new;
 end;
 $$ language plpgsql;
+
 
 -- Mengaktifkan Trigger pada tabel auth.users
 -- Drop dulu jika ada (untuk safety saat reset db)

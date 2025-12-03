@@ -106,9 +106,10 @@ shippal/
 
 3.  **Backend Setup**
     ```bash
-    cd ../shippal-backend
+    cd shippal-backend
     poetry install
     # Run the agent/backend service
+    poetry run poe dev
     ```
 
 ---

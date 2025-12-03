@@ -25,9 +25,9 @@ The backend service for ShipPal, powered by **Python**, **FastAPI**, and **Supab
     ```env
     SUPABASE_URL=your_supabase_url
     SUPABASE_SERVICE_KEY=your_service_role_key
-    OPENROUTER_BASE_URL=https://api.openrouter.ai
-    OPENROUTER_API_KEY=your_openrouter_key
-    OPENROUTER_MODEL_ID=your_openrouter_model_id
+    LLM_BASE_URL=https://api.kolosal.ai/v1
+    LLM_API_KEY=your_llm_api_key
+    LLM_MODEL_ID=your_llm_model_id
     ```
 
 ## Development

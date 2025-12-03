@@ -15,9 +15,9 @@ jobs:
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       
       # OpenRouter
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      OPENROUTER_BASE_URL: ${{ secrets.OPENROUTER_BASE_URL }}
-      OPENROUTER_MODEL_ID: ${{ secrets.OPENROUTER_MODEL_ID }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+      LLM_MODEL_ID: ${{ secrets.LLM_MODEL_ID }}
       
       # App Defaults
       HOST: "0.0.0.0"
@@ -96,9 +96,9 @@ jobs:
           copy-env-vars: |
             SUPABASE_URL
             SUPABASE_SERVICE_KEY
-            OPENROUTER_API_KEY
-            OPENROUTER_BASE_URL
-            OPENROUTER_MODEL_ID
+            LLM_API_KEY
+            LLM_BASE_URL
+            LLM_MODEL_ID
             HOST
             PORT
           wait-for-service-stability-seconds: 1200
