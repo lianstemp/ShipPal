@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { productsApi, requestsApi, swipesApi, matchesApi, contactsApi } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Loader2, X, Heart, MapPin, Building2, Package } from "lucide-react"
+import { Loader2, X, Handshake, MapPin, Building2, Package } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion"
 import { MatchDialog } from "@/components/match-dialog"
@@ -42,8 +42,8 @@ export default function MatchPage() {
                             // Construct a profile-like object
                             name: partner.full_name,
                             description: role === 'buyer'
-                                ? `Liked your request: ${m.request?.title}`
-                                : `Liked your product: ${m.product?.name}`,
+                                ? `Interested in your request: ${m.request?.title}`
+                                : `Interested in your product: ${m.product?.name}`,
                             image_url: partner.avatar_url,
                             profiles: partner,
                             tags: ['Incoming Request']
@@ -243,7 +243,7 @@ export default function MatchPage() {
                     className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 text-green-500 hover:bg-green-500/10 hover:border-green-500 transition-all shadow-xl"
                     onClick={() => handleSwipe('right', items[0])}
                 >
-                    <Heart className="w-8 h-8 fill-current" />
+                    <Handshake className="w-8 h-8 stroke-current" />
                 </Button>
             </div>
         </div>
@@ -293,16 +293,16 @@ function SwipeCard({ item, onSwipe }) {
                     {item.isIncoming && (
                         <div className="absolute top-4 left-0 right-0 flex justify-center z-20">
                             <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
-                                Liked You!
+                                Connection Request
                             </div>
                         </div>
                     )}
 
                     <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 border-4 border-green-500 rounded-lg px-4 py-2 -rotate-12 z-10">
-                        <span className="text-4xl font-bold text-green-500 uppercase">Like</span>
+                        <span className="text-4xl font-bold text-green-500 uppercase">Connect</span>
                     </motion.div>
                     <motion.div style={{ opacity: nopeOpacity }} className="absolute top-8 right-8 border-4 border-red-500 rounded-lg px-4 py-2 rotate-12 z-10">
-                        <span className="text-4xl font-bold text-red-500 uppercase">Nope</span>
+                        <span className="text-4xl font-bold text-red-500 uppercase">Pass</span>
                     </motion.div>
 
                     {(item.images && item.images.length > 0) ? (

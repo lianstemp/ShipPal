@@ -241,9 +241,40 @@ export default function DealPage() {
                                 </div>
                             )}
                             <Separator className="bg-zinc-800 my-4" />
+
+                            {/* Shipping Estimate */}
+                            <div className="bg-zinc-950/50 p-4 rounded-lg border border-zinc-800/50 mb-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Truck className="w-4 h-4 text-blue-500" />
+                                    <h4 className="text-sm font-medium text-white">Shipping Estimate</h4>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-zinc-500 text-xs">Origin</p>
+                                        <p className="text-zinc-300">Jakarta, Indonesia</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-zinc-500 text-xs">Destination</p>
+                                        <p className="text-zinc-300">{deal.contact?.buyer?.country || "International"}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-3 pt-3 border-t border-zinc-800/50 flex justify-between items-center">
+                                    <span className="text-zinc-400 text-xs">Estimated Cost</span>
+                                    <span className="text-zinc-300 font-mono">
+                                        ${(50 + (deal.items?.reduce((acc, item) => acc + item.quantity, 0) || 0) * 5).toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+
                             <div className="flex justify-between items-center pt-2 px-2">
-                                <span className="text-zinc-400">Total Amount</span>
-                                <span className="text-2xl font-bold text-white">${deal.total_amount?.toLocaleString() || 0}</span>
+                                <span className="text-zinc-400">Subtotal</span>
+                                <span className="text-xl font-bold text-zinc-300">${deal.total_amount?.toLocaleString() || 0}</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-1 px-2">
+                                <span className="text-zinc-400">Est. Total</span>
+                                <span className="text-2xl font-bold text-white">
+                                    ${((deal.total_amount || 0) + (50 + (deal.items?.reduce((acc, item) => acc + item.quantity, 0) || 0) * 5)).toLocaleString()}
+                                </span>
                             </div>
                         </div>
                     </Card>
@@ -284,6 +315,8 @@ export default function DealPage() {
                             <div className="p-2 bg-purple-500/10 rounded-lg">
                                 <CreditCard className="w-6 h-6 text-purple-500" />
                             </div>
+
+
                             <div>
                                 <h3 className="font-bold text-white text-lg">Payment Information</h3>
                                 <p className="text-zinc-400 text-sm">Transfer details for the transaction.</p>
@@ -317,6 +350,38 @@ export default function DealPage() {
                                     Please include the Deal ID <strong>#{deal.id.slice(0, 8)}</strong> in your transfer reference.
                                     Payment verification typically takes 1-2 business days.
                                 </p>
+                            </div>
+                        </div>
+
+                        {/* Shipping Details */}
+                        <div className="bg-zinc-950 p-6 rounded-xl border border-zinc-800 space-y-4 mt-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Truck className="w-4 h-4 text-blue-500" />
+                                <h4 className="text-sm font-medium text-white">Shipping Details</h4>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-zinc-500 text-xs">From</p>
+                                    <p className="text-white text-sm">{deal.shipping_origin || "Jakarta, Indonesia"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-zinc-500 text-xs">To</p>
+                                    <p className="text-white text-sm">{deal.shipping_destination || deal.contact?.buyer?.country || "International"}</p>
+                                </div>
+                            </div>
+                            <div className="pt-4 border-t border-zinc-800/50 space-y-2">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-zinc-400">Subtotal</span>
+                                    <span className="text-zinc-300">${deal.total_amount?.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-zinc-400">Shipping Cost</span>
+                                    <span className="text-zinc-300">${deal.shipping_cost?.toLocaleString() || "0"}</span>
+                                </div>
+                                <div className="flex justify-between items-center pt-2 border-t border-zinc-800/50">
+                                    <span className="text-zinc-400 font-medium">Total to Pay</span>
+                                    <span className="text-xl font-bold text-white">${((deal.total_amount || 0) + (deal.shipping_cost || 0)).toLocaleString()}</span>
+                                </div>
                             </div>
                         </div>
                     </Card>

@@ -70,6 +70,18 @@ async def handle_incoming_message(message: dict):
                 items_list.append(f"- {item['name']} (Qty: {item['quantity']}, Price: {item['price_per_unit']})")
             deal_items_str = "\n".join(items_list)
 
+    # Calculate Official Shipping Estimate
+    # Logic: Base $50 + ($5 * Total Quantity)
+    total_quantity = 0
+    if deals_res.data:
+        items_res = supabase.table("deal_items").select("*").eq("deal_id", deal['id']).execute()
+        if items_res.data:
+            total_quantity = sum(item['quantity'] for item in items_res.data)
+    
+    base_cost = 50
+    per_item_cost = 5
+    estimated_shipping_cost = base_cost + (total_quantity * per_item_cost)
+    
     # Construct system prompt
     system_prompt = f"""You are ShipPal AI, a smart B2B negotiation assistant.
     You are assisting a negotiation between:
@@ -82,15 +94,20 @@ async def handle_incoming_message(message: dict):
     Items in Deal Room:
     {deal_items_str}
     
+    OFFICIAL SHIPPING ESTIMATE (Use this value):
+    - Origin: Jakarta, Indonesia
+    - Destination: {buyer_country}
+    - Estimated Cost: ${estimated_shipping_cost} (Base $50 + $5/item)
+    
     Your goal is to facilitate the deal and provide shipping estimates.
     
     INSTRUCTIONS:
     1. You have been tagged with @pal.
     2. If asked about shipping costs/estimates:
-       - The shipment is from Indonesia to {buyer_country}. DO NOT ASSUME the destination if {buyer_country} is known.
-       - USE THE ITEMS LISTED ABOVE to estimate the weight/volume.
-       - Provide a realistic shipping estimate based on standard international freight rates (Sea/Air).
-       - Mention that this is an *estimate*.
+       - The shipment is from Indonesia to {buyer_country}.
+       - YOU MUST QUOTE THE OFFICIAL SHIPPING ESTIMATE of ${estimated_shipping_cost}.
+       - Explain that this includes a base fee and a per-item handling fee.
+       - Mention that this is an *estimate* calculated by the system.
     3. Be concise, professional, and helpful.
     4. Do NOT introduce yourself in every message.
     5. IMPORTANT: DO NOT use markdown bolding (asterisks like **text**). Use plain text only.
