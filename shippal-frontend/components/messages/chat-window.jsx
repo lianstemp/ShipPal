@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Loader2, MessageSquare, Send } from "lucide-react"
+import { Loader2, MessageSquare, Send, Languages } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { translationApi } from "@/lib/api"
+import { useState, useEffect } from "react"
 
 export function ChatWindow({
     selectedContact,
@@ -17,15 +19,63 @@ export function ChatWindow({
     showAutocomplete,
     setShowAutocomplete
 }) {
+    const [isTranslationEnabled, setIsTranslationEnabled] = useState(false)
+    const [translatedMessages, setTranslatedMessages] = useState({})
+    const [translating, setTranslating] = useState(false)
+
     const getPartner = (contact) => {
         if (!user || !contact) return null
         return user.id === contact.buyer_id ? contact.seller : contact.buyer
     }
 
+    const performTranslation = async () => {
+        if (!isTranslationEnabled) return
+
+        setTranslating(true)
+        try {
+            const isBuyer = user?.id === selectedContact?.buyer_id
+            const targetLang = isBuyer ? 'en' : 'id'
+
+            const newTranslations = { ...translatedMessages }
+            const incomingMessages = messages.filter(m => m.sender_id !== user.id)
+
+            let hasNewTranslations = false
+
+            await Promise.all(incomingMessages.map(async (msg) => {
+                if (!newTranslations[msg.id]) {
+                    const translated = await translationApi.translate(msg.content_original, targetLang)
+                    if (translated && translated !== msg.content_original) {
+                        newTranslations[msg.id] = translated
+                        hasNewTranslations = true
+                    }
+                }
+            }))
+
+            if (hasNewTranslations) {
+                setTranslatedMessages(newTranslations)
+            }
+        } catch (error) {
+            console.error("Translation failed:", error)
+        } finally {
+            setTranslating(false)
+        }
+    }
+
+    const toggleTranslation = () => {
+        setIsTranslationEnabled(prev => !prev)
+    }
+
+    // Trigger translation when enabled or when messages change
+    useEffect(() => {
+        if (isTranslationEnabled) {
+            performTranslation()
+        }
+    }, [isTranslationEnabled, messages.length])
+
     return (
         <div className="flex-1 flex flex-col min-w-0">
             {/* Chat Header */}
-            <div className="p-4 border-b border-zinc-800 flex items-center gap-4 bg-zinc-900/50 backdrop-blur-sm z-10">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm z-10">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold border border-zinc-700">
                         {getPartner(selectedContact)?.full_name?.[0] || "?"}
@@ -39,6 +89,18 @@ export function ChatWindow({
                         </p>
                     </div>
                 </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleTranslation}
+                    className={cn(
+                        "hover:bg-zinc-800 transition-colors",
+                        isTranslationEnabled ? "text-blue-400 bg-blue-400/10" : "text-zinc-400"
+                    )}
+                    title="Translate Messages"
+                >
+                    <Languages className={cn("w-5 h-5", translating && "animate-pulse")} />
+                </Button>
             </div>
 
             {/* Messages List */}
@@ -72,7 +134,16 @@ export function ChatWindow({
                                             <span className="text-[10px] font-bold uppercase tracking-wider">AI Assistant</span>
                                         </div>
                                     )}
-                                    <p className="leading-relaxed whitespace-pre-wrap">{msg.content_original}</p>
+                                    <p className="leading-relaxed whitespace-pre-wrap">
+                                        {isTranslationEnabled && translatedMessages[msg.id]
+                                            ? translatedMessages[msg.id]
+                                            : msg.content_original}
+                                    </p>
+                                    {isTranslationEnabled && translatedMessages[msg.id] && (
+                                        <p className="text-[10px] text-zinc-500 mt-1 italic border-t border-zinc-700/50 pt-1">
+                                            Translated from original
+                                        </p>
+                                    )}
                                     <span className={cn(
                                         "text-[10px] block mt-1.5 text-right font-medium opacity-0 group-hover:opacity-70 transition-opacity",
                                         isMe ? "text-blue-100" : "text-zinc-500"
