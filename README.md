@@ -3,9 +3,12 @@
 # ShipPal
 
 <div align="center">
-  <img src="shippal-frontend/public/logo.svg" height="80" alt="ShipPal Logo" />
-  <img src="shippal-frontend/public/imphnen.svg" height="80" alt="Imphnen Logo" style="margin-left: 20px;" />
+  <img src="shippal-frontend/public/logo.svg" height="150" alt="ShipPal Logo" style="vertical-align: middle;" />
+  <span style="font-size: 60px; margin: 0 30px; vertical-align: middle;">X</span>
+  <img src="shippal-frontend/public/imphnen.svg" height="150" alt="Imphnen Logo" style="vertical-align: middle;" />
 </div>
+
+<br />
 
 ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
