@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Plus, Package, MoreVertical } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { ProductModal } from "@/components/product-modal"
 
 export default function ProductsPage() {
@@ -15,6 +16,7 @@ export default function ProductsPage() {
     const [loading, setLoading] = useState(true)
     const [selectedProduct, setSelectedProduct] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const searchParams = useSearchParams()
     const supabase = createClient()
 
     useEffect(() => {
@@ -31,9 +33,14 @@ export default function ProductsPage() {
                 }
             }
             setLoading(false)
+
+            // Check for action=new
+            if (searchParams.get('action') === 'new') {
+                setIsModalOpen(true)
+            }
         }
         loadProducts()
-    }, [supabase])
+    }, [supabase, searchParams])
 
     if (loading) {
         return (

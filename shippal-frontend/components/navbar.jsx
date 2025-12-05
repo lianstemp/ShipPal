@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Ship, Menu, X, ArrowRight, User } from "lucide-react"
@@ -64,8 +65,8 @@ export function Navbar() {
                 <div className="flex items-center justify-between h-14 px-4">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="p-2 bg-blue-600 rounded-lg group-hover:bg-blue-500 transition-colors">
-                            <Ship className="w-5 h-5 text-white" />
+                        <div className="flex items-center justify-center">
+                            <Image src="/logo.svg" alt="ShipPal Logo" width={32} height={32} className="w-8 h-8" />
                         </div>
                         <span className="font-bold text-xl text-white tracking-tight">ShipPal</span>
                     </Link>

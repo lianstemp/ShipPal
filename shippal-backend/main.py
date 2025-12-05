@@ -20,7 +20,7 @@ app = FastAPI(
 origins = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://shippal.vercel.app",
+    "https://shippal.vessail.app",
     "*" # Allow all for hackathon/dev
 ]
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { productsApi, requestsApi, matchesApi } from "@/lib/api"
+import { dealsApi } from "@/lib/api/deals"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Package, MessageSquare, TrendingUp, FileText, Plus } from "lucide-react"
@@ -15,9 +16,10 @@ export default function DashboardPage() {
     const [stats, setStats] = useState({
         activeItems: 0,
         matches: 0,
-        unreadMessages: 0, // Placeholder for now
-        pendingDeals: 0 // Placeholder for now
+        unreadMessages: 0,
+        pendingDeals: 0
     })
+    const [recentActivity, setRecentActivity] = useState([])
     const supabase = createClient()
 
     useEffect(() => {
@@ -31,14 +33,7 @@ export default function DashboardPage() {
                     // Fetch Active Items (Products or Requests)
                     let items = []
                     if (role === "seller") {
-                        items = await productsApi.getAll() // Ideally filter by user_id, but API gets all for now. 
-                        // We need to filter by user_id here if API doesn't support it yet, 
-                        // or update API. For now, let's assume getAll returns everything and we filter client side if needed,
-                        // OR better, let's just use what we have. 
-                        // Actually, productsApi.getAll() returns ALL products. We need user specific.
-                        // Let's assume for MVP we just show count of ALL for now or filter if possible.
-                        // Wait, the user wants REAL data. 
-                        // Let's filter by created_by if the API returns it.
+                        items = await productsApi.getAll()
                         items = items.filter(i => i.seller_id === user.id)
                     } else {
                         items = await requestsApi.getAll()
@@ -48,12 +43,25 @@ export default function DashboardPage() {
                     // Fetch Matches
                     const matches = await matchesApi.getAll(user.id)
 
+                    // Fetch Deals
+                    const deals = await dealsApi.getAll(user.id)
+                    const pendingDeals = deals.filter(d => d.status !== 'completed' && d.status !== 'cancelled')
+
                     setStats({
                         activeItems: items.length,
                         matches: matches.length,
-                        unreadMessages: 0, // Todo: Implement messages
-                        pendingDeals: 0 // Todo: Implement deals
+                        unreadMessages: 0, // Placeholder
+                        pendingDeals: pendingDeals.length
                     })
+
+                    // Set Recent Activity (Mix of new items and deals)
+                    const activity = [
+                        ...items.map(i => ({ type: role === 'seller' ? 'product' : 'request', ...i })),
+                        ...deals.map(d => ({ type: 'deal', ...d }))
+                    ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5)
+
+                    setRecentActivity(activity)
+
                 } catch (error) {
                     console.error("Error loading dashboard data:", error)
                 }
@@ -98,7 +106,7 @@ export default function DashboardPage() {
                     <h1 className="text-3xl font-bold text-white">Dashboard</h1>
                     <p className="text-zinc-400">Welcome back, {user?.user_metadata?.full_name || user?.email}</p>
                 </div>
-                <Link href={isSeller ? "/dashboard/products/new" : "/dashboard/requests/new"}>
+                <Link href={isSeller ? "/dashboard/products?action=new" : "/dashboard/requests?action=new"}>
                     <Button className="bg-blue-600 hover:bg-blue-500 text-white">
                         <Plus className="w-4 h-4 mr-2" />
                         {isSeller ? "List New Product" : "Post Buying Request"}
@@ -144,33 +152,74 @@ export default function DashboardPage() {
                 ))}
             </div>
 
-            {/* Recent Activity / Placeholder */}
+            {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <Card className="lg:col-span-2 bg-zinc-900 border-zinc-800">
                     <CardHeader>
                         <CardTitle className="text-white">Recent Activity</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-64 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
-                            <p className="text-zinc-500">No recent activity to show.</p>
-                        </div>
+                        {recentActivity.length > 0 ? (
+                            <div className="space-y-4">
+                                {recentActivity.map((item, i) => (
+                                    <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-zinc-950/50 border border-zinc-800">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.type === 'deal' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                    item.type === 'product' ? 'bg-purple-500/10 text-purple-500' :
+                                                        'bg-blue-500/10 text-blue-500'
+                                                }`}>
+                                                {item.type === 'deal' ? <FileText className="w-5 h-5" /> :
+                                                    item.type === 'product' ? <Package className="w-5 h-5" /> :
+                                                        <FileText className="w-5 h-5" />}
+                                            </div>
+                                            <div>
+                                                <p className="text-white font-medium">
+                                                    {item.type === 'deal' ? `Deal: ${item.title}` :
+                                                        item.type === 'product' ? `Listed: ${item.name}` :
+                                                            `Requested: ${item.title}`}
+                                                </p>
+                                                <p className="text-xs text-zinc-500">
+                                                    {new Date(item.created_at).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            {item.status && (
+                                                <span className={`text-xs px-2 py-1 rounded-full ${item.status === 'completed' ? 'bg-green-500/10 text-green-500' :
+                                                        item.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                            'bg-zinc-800 text-zinc-400'
+                                                    }`}>
+                                                    {item.status}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="h-64 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+                                <p className="text-zinc-500">No recent activity to show.</p>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
                 <Card className="bg-zinc-900 border-zinc-800">
                     <CardHeader>
                         <CardTitle className="text-white">
-                            {isSeller ? "Recent Requests" : "Recommended Products"}
+                            Quick Stats
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {[1, 2, 3].map((_, i) => (
-                                <div key={i} className="p-3 rounded-lg bg-zinc-950/50 border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer">
-                                    <div className="h-2 w-1/3 bg-zinc-800 rounded mb-2" />
-                                    <div className="h-2 w-2/3 bg-zinc-800 rounded" />
-                                </div>
-                            ))}
+                            <div className="p-4 rounded-lg bg-zinc-950/50 border border-zinc-800">
+                                <p className="text-sm text-zinc-400 mb-1">Total Value</p>
+                                <p className="text-2xl font-bold text-white">$0.00</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-zinc-950/50 border border-zinc-800">
+                                <p className="text-sm text-zinc-400 mb-1">Success Rate</p>
+                                <p className="text-2xl font-bold text-white">100%</p>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

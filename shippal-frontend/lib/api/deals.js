@@ -1,6 +1,24 @@
+import { createClient } from "@/lib/supabase/client"
+
+const supabase = createClient()
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 
 export const dealsApi = {
+    async getAll(userId) {
+        const { data, error } = await supabase
+            .from('deals')
+            .select('*, deal_items(name)')
+            .order('created_at', { ascending: false })
+        
+        if (error) throw error
+        
+        // Map to include a display title
+        return data.map(deal => ({
+            ...deal,
+            title: deal.deal_items?.[0]?.name || 'Untitled Deal'
+        }))
+    },
+
     async create(contactId) {
         const res = await fetch(`${BACKEND_URL}/api/deals/`, {
             method: "POST",

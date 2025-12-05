@@ -25,6 +25,16 @@ export const requestsApi = {
         return data
     },
 
+    async getByUserId(userId) {
+        const { data, error } = await supabase
+            .from('buying_requests')
+            .select('*')
+            .eq('buyer_id', userId)
+            .order('created_at', { ascending: false })
+        if (error) throw error
+        return data
+    },
+
     async getUnswiped(userId) {
         // 1. Get IDs of requests already swiped by this user
         const { data: swipes, error: swipesError } = await supabase

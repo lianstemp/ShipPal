@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -83,8 +84,8 @@ export function Sidebar({ user }) {
         <div className="hidden md:flex flex-col w-64 bg-zinc-950 border-r border-zinc-800 h-screen fixed left-0 top-0">
             <div className="p-6 border-b border-zinc-800">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span className="font-bold text-white">S</span>
+                    <div className="flex items-center justify-center">
+                        <Image src="/logo.svg" alt="ShipPal Logo" width={32} height={32} className="w-8 h-8" />
                     </div>
                     <span className="text-xl font-bold text-white">ShipPal</span>
                 </Link>

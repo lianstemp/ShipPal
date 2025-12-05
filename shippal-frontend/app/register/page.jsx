@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -97,8 +98,8 @@ export default function RegisterPage() {
 
                 <div className="relative z-10 p-12 text-white max-w-xl">
                     <div className="mb-8 flex items-center gap-3">
-                        <div className="p-3 bg-blue-600 rounded-xl shadow-lg shadow-blue-600/20">
-                            <Ship className="w-8 h-8 text-white" />
+                        <div className="flex items-center justify-center">
+                            <Image src="/logo.svg" alt="ShipPal Logo" width={48} height={48} className="w-12 h-12" />
                         </div>
                         <h1 className="text-4xl font-bold tracking-tight">ShipPal</h1>
                     </div>

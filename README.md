@@ -2,6 +2,11 @@
 
 # ShipPal
 
+<div align="center">
+  <img src="shippal-frontend/public/logo.svg" height="80" alt="ShipPal Logo" />
+  <img src="shippal-frontend/public/imphnen.svg" height="80" alt="Imphnen Logo" style="margin-left: 20px;" />
+</div>
+
 ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)

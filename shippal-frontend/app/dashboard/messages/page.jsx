@@ -345,7 +345,7 @@ export default function MessagesPage() {
     const isSeller = selectedContact && user && user.id === selectedContact.seller_id
 
     return (
-        <div className="max-w-[1600px] mx-auto h-[calc(100vh-2rem)] flex flex-col p-4">
+        <div className="max-w-[1600px] mx-auto h-[calc(95vh-2rem)] flex flex-col p-4">
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-white">Deal Room</h1>
                 <p className="text-zinc-400">Chat with your connections</p>

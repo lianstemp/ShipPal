@@ -22,6 +22,16 @@ export const productsApi = {
         return data
     },
 
+    async getByUserId(userId) {
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('seller_id', userId)
+            .order('created_at', { ascending: false })
+        if (error) throw error
+        return data
+    },
+
     async create(product) {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error("Unauthorized")

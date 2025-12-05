@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Globe, ShieldCheck, MessageSquareText, TrendingUp, Users, Zap } from "lucide-react"
 
@@ -191,8 +192,8 @@ export default function Home() {
       <footer className="py-12 border-t border-white/10 bg-zinc-950">
         <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <Globe className="w-4 h-4 text-white" />
+            <div className="flex items-center justify-center">
+              <Image src="/logo.svg" alt="ShipPal Logo" width={24} height={24} className="w-6 h-6" />
             </div>
             <span className="font-bold text-lg text-white">ShipPal</span>
           </div>

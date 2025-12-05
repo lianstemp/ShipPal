@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Plus, FileText, MoreVertical } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { RequestModal } from "@/components/request-modal"
 
 export default function RequestsPage() {
@@ -15,6 +16,7 @@ export default function RequestsPage() {
     const [loading, setLoading] = useState(true)
     const [selectedRequest, setSelectedRequest] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const searchParams = useSearchParams()
     const supabase = createClient()
 
     useEffect(() => {
@@ -31,9 +33,14 @@ export default function RequestsPage() {
                 }
             }
             setLoading(false)
+
+            // Check for action=new
+            if (searchParams.get('action') === 'new') {
+                setIsModalOpen(true)
+            }
         }
         loadRequests()
-    }, [supabase])
+    }, [supabase, searchParams])
 
     if (loading) {
         return (
