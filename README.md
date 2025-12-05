@@ -1,6 +1,6 @@
 
 <div align="center">
-  <img src="shippal-frontend/public/hackathon.svg" height="150" alt="ShipPal Logo" />
+  <img src="shippal-frontend/public/hackathon.png" height="150" alt="ShipPal Logo" />
 
   # ShipPal
   ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)
@@ -16,8 +16,6 @@
   Used by forward-thinking SMEs and international buyers to streamline global trade.
 
 </div>
-
-<br />
 
 ShipPal is a "Smart Matchmaking" platform connecting local exporters with international buyers. Think of it as **Tinder for B2B Trade** coupled with an AI-powered logistics & legal assistant.
 
