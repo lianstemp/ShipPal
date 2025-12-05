@@ -1,27 +1,50 @@
-# ShipPal Backend
+# ShipPal Backend API
 
-The backend service for ShipPal, powered by **Python**, **FastAPI**, and **Supabase**. It handles the core business logic, including the AI matchmaking algorithms, document generation agents, and database management.
+The core intelligence layer of ShipPal, serving as the orchestrator for matchmaking, negotiation, and compliance automation.
 
-## Prerequisites
+## Technology Stack
 
--   Python 3.12+
--   Poetry (Dependency Management)
--   Supabase CLI (for local database development)
+- **Framework**: FastAPI (Python 3.12+)
+- **AI/LLM**: Strands Agents, OpenAI Compatible APIs
+- **Database**: Supabase (PostgreSQL + pgvector)
+- **Task Runner**: Poe the Poet
 
-## Installation
+## Core Capabilities
 
-1.  Navigate to the backend directory:
-    ```bash
-    cd shippal-backend
-    ```
+### 1. Smart Matching Agent
+Analyzes unstructured product requests and supply listings to calculate compatibility scores based on quality, quantity, and logistics parameters.
 
-2.  Install dependencies using Poetry:
+### 2. Negotiation Coach
+A specialized agent that monitors Deal Room chats in real-time, offering price recommendations and negotiation strategies based on historical market data.
+
+### 3. Compliance & Document Generator
+Generates legal international trade documents (Commercial Invoice, Packing List) by mapping deal data to country-specific regulatory templates.
+
+## Getting Started
+
+### Prerequisites
+- Python 3.12 or higher
+- Docker (optional but recommended)
+- Supabase Project Credentials
+
+### Installation
+
+#### Method A: Docker (Production-ready)
+
+```bash
+docker build -t shippal-backend .
+docker run -p 8000:8000 --env-file .env shippal-backend
+```
+
+#### Method B: Local Development (with Poetry)
+
+1.  **Install Dependencies**
     ```bash
     poetry install
     ```
 
-3.  Set up environment variables:
-    Create a `.env` file in the `shippal-backend` directory with your credentials.
+2.  **Environment Setup**
+    Create a `.env` file:
     ```env
     SUPABASE_URL=your_supabase_url
     SUPABASE_SERVICE_KEY=your_service_role_key
@@ -30,37 +53,16 @@ The backend service for ShipPal, powered by **Python**, **FastAPI**, and **Supab
     LLM_MODEL_ID=your_llm_model_id
     ```
 
-## Development
-
-We use `poethepoet` for task management.
-
--   **Run the server**:
+3.  **Run Service**
     ```bash
     poetry run poe dev
     ```
-    This will start the FastAPI server using `uvicorn`.
 
--   **Linting**:
-    ```bash
-    poetry run poe lint
-    ```
+## Development Commands
 
--   **Formatting**:
-    ```bash
-    poetry run poe format
-    ```
-
--   **Security Check**:
-    ```bash
-    poetry run poe security
-    ```
-
-## Database
-
-This project uses Supabase (PostgreSQL). Migrations and configuration are located in the `supabase/` directory.
-
-## AI Agents
-
-The backend utilizes **Strands Agents** to power features like:
--   **Matchmaking**: Analyzing buyer/seller data to find optimal pairs.
--   **Compliance**: Generating and validating export documents.
+| Command | Description |
+| :--- | :--- |
+| `poetry run poe dev` | Start dev server with hot reload |
+| `poetry run poe lint` | Run linter (Ruff) |
+| `poetry run poe format` | Format code (Black/Ruff) |
+| `poetry run poe security` | Run security audit |

@@ -1,126 +1,83 @@
-<div align="center">
-
-# ShipPal
 
 <div align="center">
-  <img src="shippal-frontend/public/logo.svg" height="150" alt="ShipPal Logo" style="vertical-align: middle;" />
-  <span style="font-size: 60px; margin: 0 30px; vertical-align: middle;">X</span>
-  <img src="shippal-frontend/public/imphnen.svg" height="150" alt="Imphnen Logo" style="vertical-align: middle;" />
+  <img src="shippal-frontend/public/hackathon.svg" height="150" alt="ShipPal Logo" />
+
+  # ShipPal
+  ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com)
+  [![Bun](https://img.shields.io/badge/Bun-000000?style=flat&logo=bun&logoColor=white)](https://bun.sh)
+  [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com)
+  [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+  [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+
+  ### Make Local Go Global.
+
+  Used by forward-thinking SMEs and international buyers to streamline global trade.
+
 </div>
 
 <br />
 
-![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)
-![Strands Agents](https://img.shields.io/badge/AI-Strands_Agents-FF4B4B?style=flat)
-![Status](https://img.shields.io/badge/Status-Hackathon-orange?style=flat)
+ShipPal is a "Smart Matchmaking" platform connecting local exporters with international buyers. Think of it as **Tinder for B2B Trade** coupled with an AI-powered logistics & legal assistant.
 
+Unlike traditional B2B marketplaces that are static and complex, ShipPal simplifies the export process into a familiar flow: **Post → Swipe → Negotiate → Ship & Pay**.
 
-> **Tinder for Export** — UMKM dengan Kebutuhan Buyer Global.
+## Key Features
 
-</div>
+### 1. The Matchmaking Engine
+Traditional directories are cluttered. ShipPal uses a swiping interface (Right for Interest, Left for Pass) to match Buyers and Sellers based on:
+- **Product Specifications** (Grade, Origin, Certification)
+- **Logistics Compatibility** (MOQ vs. Production Capacity)
+- **Destination** (Port-to-Port matching)
 
+### 2. Deal Room & @pal
+Once matched, parties enter the **Deal Room**. This isn't just a chat; it's an intelligent workspace:
+- **Real-time Translation**: Communicate seamlessly across languages (e.g., Seller speaks Indonesian, Buyer sees English).
+- **@pal Assistant**: Mention `@pal` to get instant estimates on shipping costs, HS Code recommendations, or regulatory checks.
 
-**ShipPal** adalah platform "Smart Matchmaking" berbasis AI yang menghubungkan UMKM (Eksportir Lokal) dengan Pembeli Internasional (Buyer).
+### 3. AI Compliance Agentry
+The biggest barrier to export is paperwork. ShipPal's AI removes this friction:
+- **Auto-Generates Documents**: Automatically creates Commercial Invoices, Packing Lists, and COOs compliant with destination country regulations.
+- **Regulatory Guardian**: Alerts users to specific import restrictions or required certifications before the deal is sealed.
 
-Berbeda dengan marketplace B2B tradisional yang kaku, ShipPal menggunakan pendekatan swiping (seperti Tinder) untuk mencocokkan Spesifikasi Produk, Kapasitas Produksi (Supply), dan Minimum Order Quantity (Demand). Platform ini juga berfungsi sebagai "Asisten AI Penengah" yang memandu proses legalitas, dokumen ekspor, dan logistik, menjadikan pengalaman ekspor semudah berjualan di Shopee.
+## Technology Stack
 
-## 🛑 Problem Statement (Latar Belakang Masalah)
+- **Backend**: Python, FastAPI, Docker, Strands Agents (AI Logic)
+- **Frontend**: Next.js (React), Tailwind CSS, Bun
+- **Database**: Supabase (PostgreSQL)
 
-*   **The Capacity Gap (Kesenjangan Kapasitas)**: Buyer seringkali membutuhkan kuantitas kecil-menengah (Micro-lot) yang ditolak oleh pabrik besar. UMKM memiliki produk berkualitas, tapi kapasitas produksinya terbatas. Akibatnya: Banyak peluang transaksi gagal karena "Gak Match" di kuantitas.
-*   **Complexity of Compliance (Rumitnya Dokumen)**: UMKM takut ekspor karena tidak paham dokumen (Invoice, Packing List, COO, Sertifikasi). Salah satu dokumen saja bisa menyebabkan barang tertahan di bea cukai.
-*   **Trust Issue (Masalah Kepercayaan)**: Buyer ragu transfer ke UMKM yang tidak punya reputasi internasional. UMKM ragu kirim barang takut tidak dibayar.
+## Quickstart
 
-## 💡 The Solution: ShipPal
-
-Kami membangun ekosistem ekspor end-to-end:
-
-### A. Core Concept: "Tinder for Export"
-Algoritma pencocokan cerdas yang memastikan Buyer hanya bertemu Seller yang sanggup memenuhi kriteriaya, dan sebaliknya.
-*   Buyer memposting Request (Misal: Butuh 500kg Kopi Gayo).
-*   Seller memposting Supply (Misal: Punya stok 600kg Kopi Gayo).
-*   **AI Match**: Jika spesifikasi dan kuantitas overlap, terjadi "Match".
-
-### B. Core Concept: "Shopee for Export" (The Middleman)
-Setelah Match, ShipPal bertindak sebagai platform penengah yang menyediakan:
-*   Rekening Bersama (Escrow).
-*   Manajemen Logistik.
-*   Pemeriksaan Dokumen Otomatis.
-
-## 🚀 Key Features (Fitur Utama)
-
-### 1. Smart Matching System (Swipe to Export)
-*   **UI/UX**: Antarmuka kartu sederhana. Geser Kanan (Interested/Sanggup), Geser Kiri (Skip).
-*   **Filter Cerdas**: AI menyaring berdasarkan Jenis Komoditas, Grade/Kualitas, MOQ vs Kapasitas Produksi, dan Negara Tujuan.
-
-### 2. The Deal Room (AI-Guided Chat)
-*   Ruang obrolan khusus yang terbuka hanya setelah terjadi "Match".
-*   **Real-time Translation**: Chat otomatis diterjemahkan (Indo ↔ Inggris/Mandarin/dll).
-*   **AI Negotiation Coach**: Bot yang memberi saran jika harga terlalu rendah atau tinggi.
-
-### 3. AI Compliance Officer (Fitur Andalan) 🤖
-Ini adalah "Otak" dari sistem dokumen.
-*   **Auto-Checklist**: Begitu deal terjadi, AI membuatkan daftar "PR" dokumen yang harus diupload berdasarkan negara tujuan.
-*   **Document Generator**: UMKM cukup input data dasar, AI membuatkan Commercial Invoice dan Packing List standar internasional (PDF).
-*   **OCR Validator**: Saat user upload dokumen, AI men-scan dan memvalidasi (Misal: "Warning! Berat di Packing List beda dengan di Invoice").
-
-### 4. Group Buying / Consolidation (Visi Masa Depan)
-Jika ada Buyer butuh 1 Ton, tapi Seller A cuma punya 500kg, AI akan mencarikan Seller B (500kg) untuk digabungkan dalam satu pengiriman (LCL consolidation).
-
-## 🛠️ Tech Stack
-
-*   **Frontend**: Next.js (React), Tailwind CSS
-*   **Backend**: Python, Strands Agents (AI Logic)
-*   **Database & Auth**: Supabase (PostgreSQL)
-
-## 📂 Project Structure
+### Frontend 
 
 ```bash
-shippal/
-├── shippal-backend/     # Python Backend & AI Logic
-│   ├── supabase/        # Database Migrations & Config
-│   ├── poetry.lock
-│   └── pyproject.toml
-└── shippal-frontend/    # Next.js Frontend Application
-    ├── app/
-    ├── lib/
-    ├── public/
-    ├── jsconfig.json
-    └── next.config.mjs
+cd shippal-frontend
+bun install
+bun dev
 ```
 
-## ⚡ Getting Started
+### Backend 
 
-### Prerequisites
-*   Node.js & npm/bun
-*   Python 3.10+ & Poetry
-*   Supabase CLI
+```bash
+cd shippal-backend
+poetry install
+poetry run poe dev
+```
 
-### Installation
+### Docker
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/lianstemp/shippal.git
-    cd shippal
-    ```
+```bash
+cd shippal-backend
+docker build -t shippal-backend .
+docker run -p 8000:8000 shippal-backend
+```
 
-2.  **Frontend Setup**
-    ```bash
-    cd shippal-frontend
-    npm install
-    npm run dev
-    ```
+## License
 
-3.  **Backend Setup**
-    ```bash
-    cd shippal-backend
-    poetry install
-    # Run the agent/backend service
-    poetry run poe dev
-    ```
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
 
----
+<br />
 
 <div align="center">
   <i>ShipPal: Make Local Go Global.</i>

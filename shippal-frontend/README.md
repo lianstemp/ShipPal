@@ -1,50 +1,50 @@
 # ShipPal Frontend
 
-The frontend application for ShipPal, built with **Next.js** and **Tailwind CSS**. It provides the interactive interface for users to manage their profiles, swipe on potential matches, negotiate in the Deal Room, and manage export documentation.
+The client-side application for ShipPal, focusing on a high-performance, mobile-responsive experience for global trade.
 
-## Prerequisites
+## Technology Stack
 
--   Node.js (v18 or higher recommended)
--   npm or bun
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS
+- **Runtime**: Bun (Preferred) / Node.js
+- **State Management**: React Hooks + Supabase Realtime
 
-## Installation
+## Key Modules
 
-1.  Navigate to the frontend directory:
+- **Swipe Interface**: Optimized card-stack interactions for discovering potential trade partners.
+- **The Deal Room**: A unified negotiation interface combining chat, document sharing, and live prompts from the AI assistant.
+- **Smart Forms**: Dynamic input forms for complex trade data (HS Codes, Incoterms) that adapt based on user input.
+
+## Getting Started
+
+### Prerequisites
+
+- Bun 1.0+ (Recommended) or Node.js 18+
+
+### Installation & Run
+
+1.  **Install Dependencies**
     ```bash
-    cd shippal-frontend
-    ```
-
-2.  Install dependencies:
-    ```bash
-    npm install
-    # or
     bun install
     ```
 
-3.  Set up environment variables:
-    Create a `.env.local` file in the root of `shippal-frontend` and add the necessary Supabase keys.
+2.  **Environment Setup**
+    Create `.env.local`:
     ```env
     NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
     ```
 
-4.  Run the development server:
+3.  **Start Development Server**
     ```bash
-    npm run dev
+    bun dev
     ```
-
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Project Structure
-
--   `/app`: Main application routes and pages (App Router).
--   `/components`: Reusable UI components.
--   `/lib`: Utility functions and Supabase client configuration.
--   `/public`: Static assets.
+    Application will be live at `http://localhost:3000`.
 
 ## Scripts
 
--   `npm run dev`: Runs the development server.
--   `npm run build`: Builds the application for production.
--   `npm run start`: Starts the production server.
--   `npm run lint`: Runs the linter.
+| Command | Description |
+| :--- | :--- |
+| `bun dev` | Start local dev server |
+| `bun run build` | Compile for production |
+| `bun run lint` | Check for code issues |
