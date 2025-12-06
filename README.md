@@ -12,9 +12,12 @@
   [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 
+
   ### Make Local Go Global.
 
   Used by forward-thinking SMEs and international buyers to streamline global trade.
+
+  ### [👉 View Pitch Deck / Presentation](https://shippal.vessail.app/pitch)
 
 </div>
 

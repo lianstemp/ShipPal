@@ -33,6 +33,7 @@ The client-side application for ShipPal, focusing on a high-performance, mobile-
     ```env
     NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    NEXT_PUBLIC_BACKEND_URL=your_backend_url
     ```
 
 3.  **Start Development Server**
