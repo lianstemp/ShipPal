@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Circle, Upload, FileText, Download, Loader2 } from "lucide-react"
 
-export function TaskDetailModal({ selectedTask, setSelectedTask, handleFileUpload, uploadingDocId }) {
+export function TaskDetailModal({ selectedTask, setSelectedTask, handleFileUpload, uploadingDocId, userRole }) {
     if (!selectedTask) return null
 
     return (
@@ -50,22 +50,24 @@ export function TaskDetailModal({ selectedTask, setSelectedTask, handleFileUploa
                 </div>
 
                 <DialogFooter className="flex-col sm:flex-row gap-2">
-                    <div className="relative w-full sm:w-auto">
-                        <input
-                            type="file"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={(e) => handleFileUpload(selectedTask.id, e.target.files[0])}
-                            disabled={uploadingDocId === selectedTask?.id}
-                        />
-                        <Button className="w-full bg-blue-600 hover:bg-blue-500" disabled={uploadingDocId === selectedTask?.id}>
-                            {uploadingDocId === selectedTask?.id ? (
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            ) : (
-                                <Upload className="w-4 h-4 mr-2" />
-                            )}
-                            {selectedTask?.file_url ? 'Upload New Version' : 'Upload Document'}
-                        </Button>
-                    </div>
+                    {(selectedTask?.owner_role || 'seller') === userRole && (
+                        <div className="relative w-full sm:w-auto">
+                            <input
+                                type="file"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                onChange={(e) => handleFileUpload(selectedTask.id, e.target.files[0])}
+                                disabled={uploadingDocId === selectedTask?.id}
+                            />
+                            <Button className="w-full bg-blue-600 hover:bg-blue-500" disabled={uploadingDocId === selectedTask?.id}>
+                                {uploadingDocId === selectedTask?.id ? (
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Upload className="w-4 h-4 mr-2" />
+                                )}
+                                {selectedTask?.file_url ? 'Upload New Version' : 'Upload Document'}
+                            </Button>
+                        </div>
+                    )}
                     <Button variant="ghost" onClick={() => setSelectedTask(null)} className="hover:bg-zinc-800">
                         Close
                     </Button>

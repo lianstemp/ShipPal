@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Circle, Upload, FileText, Download, Loader2 } from "lucide-react"
 
-export function DealCompliance({ documents, handleFileUpload, uploadingDocId, setSelectedTask }) {
+export function DealCompliance({ documents, handleFileUpload, uploadingDocId, setSelectedTask, userRole }) {
 
     // Helper to group documents
     const sellerDocs = documents.filter(d => d.owner_role === 'seller' || !d.owner_role) // Default to seller if null
@@ -51,22 +51,29 @@ export function DealCompliance({ documents, handleFileUpload, uploadingDocId, se
                                 )}
 
                                 {/* Upload Button Logic */}
-                                <div className="relative">
-                                    <input
-                                        type="file"
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        onChange={(e) => handleFileUpload(doc.id, e.target.files[0])}
-                                        disabled={uploadingDocId === doc.id}
-                                    />
-                                    <Button size="sm" variant="outline" className="text-xs h-8 border-zinc-700 hover:bg-zinc-800 hover:text-white" disabled={uploadingDocId === doc.id}>
-                                        {uploadingDocId === doc.id ? (
-                                            <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                                        ) : (
-                                            <Upload className="w-3 h-3 mr-2" />
-                                        )}
-                                        {doc.file_url ? 'Re-upload' : 'Upload'}
-                                    </Button>
-                                </div>
+                                {(doc.owner_role || 'seller') === userRole && (
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            onChange={(e) => handleFileUpload(doc.id, e.target.files[0])}
+                                            disabled={uploadingDocId === doc.id}
+                                        />
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="text-xs h-8 border-zinc-700 hover:bg-zinc-800 hover:text-white"
+                                            disabled={uploadingDocId === doc.id}
+                                        >
+                                            {uploadingDocId === doc.id ? (
+                                                <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                                            ) : (
+                                                <Upload className="w-3 h-3 mr-2" />
+                                            )}
+                                            {doc.file_url ? 'Re-upload' : 'Upload'}
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <p className="text-sm text-zinc-500 pl-8 line-clamp-2">

@@ -133,6 +133,8 @@ export default function DealPage() {
 
     const currentStepIndex = STEPS.findIndex(s => s.id === deal.status)
 
+    const userRole = deal && user ? (deal.contact.buyer_id === user.id ? 'buyer' : (deal.contact.seller_id === user.id ? 'seller' : null)) : null
+
     const renderTabContent = () => {
         switch (activeTab) {
             case 'negotiating':
@@ -144,6 +146,7 @@ export default function DealPage() {
                         handleFileUpload={handleFileUpload}
                         uploadingDocId={uploadingDocId}
                         setSelectedTask={setSelectedTask}
+                        userRole={userRole}
                     />
                 )
             case 'payment_pending':
@@ -188,6 +191,7 @@ export default function DealPage() {
                 setSelectedTask={setSelectedTask}
                 handleFileUpload={handleFileUpload}
                 uploadingDocId={uploadingDocId}
+                userRole={userRole}
             />
         </div>
     )
