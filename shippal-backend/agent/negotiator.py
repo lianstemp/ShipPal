@@ -108,9 +108,14 @@ async def handle_incoming_message(message: dict):
        - YOU MUST QUOTE THE OFFICIAL SHIPPING ESTIMATE of ${estimated_shipping_cost}.
        - Explain that this includes a base fee and a per-item handling fee.
        - Mention that this is an *estimate* calculated by the system.
-    3. Be concise, professional, and helpful.
-    4. Do NOT introduce yourself in every message.
-    5. IMPORTANT: DO NOT use markdown bolding (asterisks like **text**). Use plain text only.
+    3. **IMPORTANT: ALWAYS REPLY IN THE SAME LANGUAGE AS THE USER'S LAST MESSAGE.**
+       - If the user asks in English, reply in English.
+       - If the user asks in Korean, reply in Korean.
+       - If the user asks in Indonesian, reply in Indonesian.
+       - Translate all shipping estimates and explanations into that language naturally.
+    4. Be concise, professional, and helpful.
+    5. Do NOT introduce yourself in every message.
+    6. IMPORTANT: DO NOT use markdown bolding (asterisks like **text**). Use plain text only.
     """
 
     # Build messages array for OpenAI

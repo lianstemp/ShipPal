@@ -43,7 +43,7 @@ export function Navbar() {
     // User asked for "navbar that floating", usually implies global.
     // But often login pages have minimal nav. Let's keep it but maybe simpler?
     // For now, full navbar everywhere.
-    if (pathname.startsWith("/dashboard")) {
+    if (pathname.startsWith("/dashboard") || pathname.startsWith("/pitch")) {
         return null
     }
 
