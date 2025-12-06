@@ -16,6 +16,11 @@ export function TitleSlide() {
                 <p className="text-sm text-gray-500/60 font-mono border-t border-gray-800 pt-8 mt-4">
                     The Modern Operating System for International Trade
                 </p>
+                <div className="mt-4 flex flex-col items-center gap-2">
+                    <p className="text-xs text-blue-400/80 font-mono tracking-wider">
+                        shippal.vessail.app
+                    </p>
+                </div>
             </div>
         </section>
     );

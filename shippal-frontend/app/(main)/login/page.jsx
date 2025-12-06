@@ -14,17 +14,25 @@ import { createClient } from "@/lib/supabase/client"
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const router = useRouter()
     const supabase = createClient()
+
+    const autoFill = (role) => {
+        if (role === 'buyer') {
+            setEmail("garrett70@example.com")
+            setPassword("password123")
+        } else {
+            setEmail("lthompson@example.com")
+            setPassword("password123")
+        }
+    }
 
     async function handleSignIn(event) {
         event.preventDefault()
         setIsLoading(true)
         setError(null)
-
-        const formData = new FormData(event.target)
-        const email = formData.get("email")
-        const password = formData.get("password")
 
         try {
             const { error } = await supabase.auth.signInWithPassword({
@@ -49,7 +57,7 @@ export default function LoginPage() {
         <div className="w-full h-screen flex overflow-hidden bg-zinc-950">
             {/* Left Side - Visuals */}
             <div className="hidden lg:flex w-1/2 bg-zinc-900 relative items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=2940&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2940&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/50"></div>
 
                 {/* Animated Gradient Blob */}
@@ -90,6 +98,52 @@ export default function LoginPage() {
                         </CardDescription>
                     </CardHeader>
 
+                    {/* Proactive Demo Hints */}
+                    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-6">
+                        <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
+                            Demo Access (Click to Auto-fill)
+                        </div>
+                        <div className="space-y-3">
+                            <button
+                                type="button"
+                                className="w-full flex items-center justify-between p-3 rounded-lg bg-zinc-900 border border-zinc-800/50 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group cursor-pointer text-left"
+                                onClick={() => autoFill('buyer')}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                                        <span className="text-sm font-bold">B</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-zinc-200 group-hover:text-blue-400 transition-colors">Buyer Account</span>
+                                        <code className="text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors">garrett70@example.com</code>
+                                    </div>
+                                </div>
+                                <div className="text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                    Click to fill &rarr;
+                                </div>
+                            </button>
+
+                            <button
+                                type="button"
+                                className="w-full flex items-center justify-between p-3 rounded-lg bg-zinc-900 border border-zinc-800/50 hover:border-green-500/50 hover:bg-green-500/5 transition-all group cursor-pointer text-left"
+                                onClick={() => autoFill('seller')}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                                        <span className="text-sm font-bold">S</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-zinc-200 group-hover:text-green-400 transition-colors">Seller Account</span>
+                                        <code className="text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors">lthompson@example.com</code>
+                                    </div>
+                                </div>
+                                <div className="text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                    Click to fill &rarr;
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
                     <CardContent className="px-0 mt-4">
                         {error && (
                             <div className="mb-6 p-4 text-sm text-red-400 bg-red-900/10 border border-red-900/20 rounded-xl">
@@ -106,7 +160,9 @@ export default function LoginPage() {
                                     type="email"
                                     placeholder="name@example.com"
                                     required
-                                    className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-blue-500 focus:ring-blue-500/20 h-12"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -121,7 +177,9 @@ export default function LoginPage() {
                                     name="password"
                                     type="password"
                                     required
-                                    className="bg-zinc-900/50 border-zinc-800 text-white focus:border-blue-500 focus:ring-blue-500/20 h-12"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="bg-zinc-900/50 border-zinc-800 text-white focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
                                 />
                             </div>
                             <Button className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white text-base font-medium rounded-xl shadow-lg shadow-blue-600/10 transition-all hover:scale-[1.02]" disabled={isLoading}>

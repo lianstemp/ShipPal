@@ -1,4 +1,4 @@
-import { CheckCircle, Github } from "lucide-react";
+import { CheckCircle, Github, Globe } from "lucide-react";
 
 export function ClosingSlide() {
     return (
@@ -14,14 +14,24 @@ export function ClosingSlide() {
                     Transforming the future of trade. One swipe at a time.
                 </p>
 
-                <a
-                    href="https://github.com/Start-Of-Something-Big/Shippal"
-                    target="_blank"
-                    className="flex items-center gap-3 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] text-sm"
-                >
-                    <Github size={18} />
-                    View on GitHub
-                </a>
+                <div className="flex gap-4">
+                    <a
+                        href="https://shippal.vessail.app/"
+                        target="_blank"
+                        className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-500 hover:scale-105 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] text-sm"
+                    >
+                        <Globe size={18} />
+                        Live Demo
+                    </a>
+                    <a
+                        href="https://github.com/lianstemp/shippal"
+                        target="_blank"
+                        className="flex items-center gap-3 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] text-sm"
+                    >
+                        <Github size={18} />
+                        View on GitHub
+                    </a>
+                </div>
             </div>
         </section>
     );

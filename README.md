@@ -18,7 +18,7 @@
 
 </div>
 
-ShipPal is a "Smart Matchmaking" platform connecting local exporters with international buyers. Think of it as **Tinder for B2B Trade** coupled with an AI-powered logistics & legal assistant.
+ShipPal is a "Smart Matchmaking" platform connecting local exporters with international buyers. Think of it as **Tinder for Global Trade** coupled with an AI-powered logistics & legal assistant.
 
 Unlike traditional B2B marketplaces that are static and complex, ShipPal simplifies the export process into a familiar flow: **Post → Swipe → Negotiate → Ship & Pay**.
 

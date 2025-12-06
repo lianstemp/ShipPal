@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Globe, ShieldCheck, MessageSquareText, TrendingUp, Users, Zap } from "lucide-react"
+import { ArrowRight, Globe, ShieldCheck, MessageSquareText, TrendingUp, Users, Zap, X, Handshake } from "lucide-react"
 
 export default function Home() {
   return (
@@ -18,7 +18,7 @@ export default function Home() {
         <div className="container mx-auto relative z-10 px-4 md:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span className="text-sm font-medium text-zinc-300">Hackathon Ready v1.0</span>
+            <span className="text-sm font-medium text-zinc-300">Global Trade Platform</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
@@ -29,7 +29,7 @@ export default function Home() {
           </h1>
 
           <p className="max-w-2xl mx-auto text-xl text-zinc-400 mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            The "Tinder for Export" platform connecting MSMEs with international buyers.
+            The "Tinder for Global Trade" platform connecting MSMEs with international buyers.
             Swipe, match, and trade with AI-powered compliance and logistics.
           </p>
 
@@ -154,15 +154,15 @@ export default function Home() {
                       </div>
                       {/* Swipe Indicators */}
                       <div className="absolute top-4 right-4 bg-green-500/20 text-green-500 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                        <TrendingUp className="w-6 h-6" />
+                        <Handshake className="w-6 h-6" />
                       </div>
                     </div>
                     <div className="flex gap-4">
                       <div className="w-12 h-12 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-red-500">
-                        <Users className="w-6 h-6" />
+                        <X className="w-6 h-6" />
                       </div>
                       <div className="w-12 h-12 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-green-500">
-                        <TrendingUp className="w-6 h-6" />
+                        <Handshake className="w-6 h-6" />
                       </div>
                     </div>
                   </div>
