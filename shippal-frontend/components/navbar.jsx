@@ -107,11 +107,6 @@ export function Navbar() {
                         ) : (
                             <div className="flex items-center gap-4">
                                 <Link href="/login">
-                                    <Button variant="ghost" className="text-zinc-300 hover:text-white hover:bg-white/5">
-                                        Login
-                                    </Button>
-                                </Link>
-                                <Link href="/register">
                                     <Button className="bg-white text-zinc-900 hover:bg-zinc-200 font-medium rounded-full px-6">
                                         Get Started <ArrowRight className="w-4 h-4 ml-2" />
                                     </Button>
@@ -172,8 +167,8 @@ export function Navbar() {
                             </>
                         ) : (
                             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                                    Login
+                                <Button className="w-full bg-white text-zinc-900 hover:bg-zinc-200 font-medium">
+                                    Get Started
                                 </Button>
                             </Link>
                         )}
