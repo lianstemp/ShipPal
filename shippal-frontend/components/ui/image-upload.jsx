@@ -63,7 +63,10 @@ export function ImageUpload({
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className={cn(
+                "grid gap-4",
+                maxFiles === 1 ? "grid-cols-1" : "grid-cols-2 md:grid-cols-3"
+            )}>
                 {value.map((url) => (
                     <div key={url} className="relative aspect-square rounded-lg overflow-hidden border border-zinc-800 group">
                         <div className="absolute top-2 right-2 z-10">

@@ -54,8 +54,17 @@ export const requestsApi = {
             query = query.not('id', 'in', `(${swipedIds.join(',')})`)
         }
 
-        const { data, error } = await query.limit(20)
+        const { data, error } = await query.limit(50)
         if (error) throw error
+
+        // Randomize the order (Fisher-Yates Shuffle)
+        if (data) {
+            for (let i = data.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [data[i], data[j]] = [data[j], data[i]];
+            }
+        }
+
         return data
     }
 }

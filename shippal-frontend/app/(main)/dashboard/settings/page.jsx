@@ -22,19 +22,38 @@ export default function SettingsPage() {
     const [companyName, setCompanyName] = useState("")
     const [selectedCountry, setSelectedCountry] = useState("")
     const [images, setImages] = useState([])
+    const [avatarUrl, setAvatarUrl] = useState("")
 
     const supabase = createClient()
 
     useEffect(() => {
         const loadData = async () => {
-            // Fetch User
+            // Fetch User Auth
             const { data: { user } } = await supabase.auth.getUser()
             setUser(user)
-            if (user?.user_metadata) {
-                setFullName(user.user_metadata.full_name || "")
-                setCompanyName(user.user_metadata.company_name || "")
-                setSelectedCountry(user.user_metadata.country || "")
-                setImages(user.user_metadata.images || [])
+
+            if (user) {
+                // Fetch Public Profile (Source of Truth)
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single()
+
+                if (profile) {
+                    setFullName(profile.full_name || "")
+                    setCompanyName(profile.company_name || "")
+                    setSelectedCountry(profile.country || "")
+                    setImages(profile.images || [])
+                    setAvatarUrl(profile.avatar_url || "")
+                } else if (user.user_metadata) {
+                    // Fallback to metadata if profile doesn't exist
+                    setFullName(user.user_metadata.full_name || "")
+                    setCompanyName(user.user_metadata.company_name || "")
+                    setSelectedCountry(user.user_metadata.country || "")
+                    setImages(user.user_metadata.images || [])
+                    setAvatarUrl(user.user_metadata.avatar_url || "")
+                }
             }
 
             // Fetch Countries
@@ -57,18 +76,37 @@ export default function SettingsPage() {
     const handleSave = async () => {
         setSaving(true)
         try {
-            const { error } = await supabase.auth.updateUser({
-                data: {
-                    full_name: fullName,
-                    company_name: companyName,
+            if (!user) return
+
+            // 1. Update Public Profile
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    email: user.email, // Ensure email is synced
                     full_name: fullName,
                     company_name: companyName,
                     country: selectedCountry,
-                    images: images
+                    images: images,
+                    avatar_url: avatarUrl,
+                    updated_at: new Date().toISOString()
+                })
+
+            if (profileError) throw profileError
+
+            // 2. Update Auth Metadata (Keep in sync)
+            const { error: authError } = await supabase.auth.updateUser({
+                data: {
+                    full_name: fullName,
+                    company_name: companyName,
+                    country: selectedCountry,
+                    images: images,
+                    avatar_url: avatarUrl
                 }
             })
 
-            if (error) throw error
+            if (authError) throw authError
+
             alert("Profile updated successfully!")
         } catch (error) {
             console.error("Error updating profile:", error)
@@ -112,6 +150,25 @@ export default function SettingsPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        {/* Avatar Upload */}
+                        <div className="flex flex-col gap-2 mb-4">
+                            <Label className="text-zinc-300">Profile Picture</Label>
+                            <div className="flex items-center gap-6">
+                                <div className="w-40 h-40">
+                                    <ImageUpload
+                                        value={avatarUrl ? [avatarUrl] : []}
+                                        onChange={(urls) => setAvatarUrl(urls[0] || "")}
+                                        maxFiles={1}
+                                        bucket="images"
+                                    />
+                                </div>
+                                <div className="text-sm text-zinc-500">
+                                    <p className="mb-1">Upload a profile picture.</p>
+                                    <p>Recommended size: 500x500px</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="grid gap-2">
                             <Label className="text-zinc-300">Email</Label>
                             <div className="relative">
